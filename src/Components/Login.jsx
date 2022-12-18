@@ -1,8 +1,14 @@
 import React from 'react'
-import { auth, provider, provider2 } from '../firebase-config'
+import { auth, provider } from '../firebase-config'
 import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+
+// redux
+import {useDispatch} from 'react-redux'
+import { setLoginUser } from '../features/login/loginSlice'
+
+import { useNavigate } from 'react-router-dom'
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -10,12 +16,17 @@ function Login() {
 
     const { register, handleSubmit, formState: { errors } } = useForm()
 
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+  
     //sign in with google -- not working 
     const SignInwithGoogle = () => {
         signInWithPopup(auth, provider)
             .then(res => {
                 console.log(res)
+                const isAuth=true
                 localStorage.setItem("isAuth", true)
+                navigate('/')
             }).catch(err => {
                 console.log(err.message)
             })
@@ -24,11 +35,14 @@ function Login() {
 
     // sigin in with email
     const onsubmit = (data) => {
-        console.log(data)
         createUserWithEmailAndPassword(auth, email, pswd)
             .then(res => {
                 console.log(res)
-                localStorage.setItem("isAuth",true)
+                const isAuth=true
+                localStorage.setItem("isAuth", true)
+                dispatch(setLoginUser(isAuth))
+                
+                navigate('/')
             }).catch(err => {
                 console.log(err)
             })
@@ -46,7 +60,7 @@ function Login() {
                     })}
                     onChange={(e) => setEmail(e.target.value)}
                 /><br />
-                {errors.Email && <p className='ml-5'>Enter a valid Email</p>}
+                {errors.Email && <p className='ml-5 text-red-500'>Enter a valid Email</p>}
                 <input className={errors.Password ? 'loginInput border-red-500' : 'loginInput'}
                     placeholder='Password' id='pswd' type='password'
                     {...register('Password', {
@@ -56,7 +70,7 @@ function Login() {
                     })}
                     onChange={(e) => setPswd(e.target.value)}
                 /><br />
-                {errors.Password && <p className='ml-5'>Enter a valid Password</p>}
+                {errors.Password && <p className='ml-5  text-red-500'>Enter a valid Password</p>}
 
 
                 <button className='btn ml-20' onClick={handleSubmit(onsubmit)}
