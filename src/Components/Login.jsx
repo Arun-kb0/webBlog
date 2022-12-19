@@ -49,7 +49,7 @@ function Login() {
     }
 
     return (
-        <div className='block justify-center items-center bg-gray-300 rounded-lg  mt-20 w-38 p-16'>
+        <div className='block justify-center items-center bg-gray-300 rounded-lg  mt-20 w-38 p-12 '>
             <form id="emailSignup" className='block mt-8'>
 
                 <input className={errors.Email ? 'loginInput border-red-500 text-red-300' : 'loginInput'}
@@ -66,12 +66,11 @@ function Login() {
                     {...register('Password', {
                         required: true,
                         minLength: 6,
-                        pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,15}$/
+                        // pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,15}$/
                     })}
                     onChange={(e) => setPswd(e.target.value)}
                 /><br />
                 {errors.Password && <p className='ml-5  text-red-500'>Enter a valid Password</p>}
-
 
                 <button className='btn ml-20' onClick={handleSubmit(onsubmit)}
                 > Submit</button>

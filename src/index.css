@@ -6,23 +6,47 @@
 
 
 @layer components{
-    
+
+
 .navlink{
-    @apply p-2 text-lg m-2  text-white hover:text-emerald-400
+    @apply p-2 text-lg m-2 text-white hover:text-zinc-300
+    text-zinc-400
  
  }
 
+ /* ++++++++++++  login ++++++++++++++++ */
+
  .loginInput{
     @apply border border-gray-900 rounded-lg bg-slate-100 
-            ml-4 m-2 h-8 p-2 w-11/12
+            mt-2 mb-2 h-8 p-2 min-w-full
+            outline-none   border-transparent  focus:border-transparent focus:ring-0 
+
          focus-visible:border-blue-400
  }
 
  .btn{
-    @apply m-2 p-2 pl-4 pr-4 bg-green-600 rounded-lg text-sm text-white shadow-lg
+    @apply m-2 p-2 pl-4 pr-4 bg-green-500 rounded-lg text-sm text-white shadow-lg
         hover:drop-shadow-lg hover:text-gray-200 
+        
  }
 
+ /* ++++++++++++  create post ++++++++++++++++ */
+ .createPost{
+   @apply block  bg-gray-800 border rounded-2xl 
+         lg:ml-80 lg:mr-80 lg:mt-14 lg:mt-10 p-8 
+         sm:ml-24 sm:mr-24 sm:mt-10 
+
+ }
+ .createPostInput{
+  @apply  rounded-xl  w-full p-4 pl-4 pr-4 text-lg 
+       outline-none 
+      border-transparent  focus:border-transparent focus:ring-0 
+ }
+
+ .CreatePostFeildText{
+   @apply text-2xl flex justify-center text-zinc-400 font-semibold
+
+ }
 
 
 }
