@@ -48,6 +48,13 @@
 
  }
 
+ /* ++++++++++++  Home ++++++++++++++++ */
+#postContainer{
+   @apply m-20 rounded-lg shadow-xl p-5 
+         lg:ml-60 lg:mr-60
+         sm:ml-20 sm:mr-20
+         xs:ml-5 xs:mr-5
+}
 
 }
 

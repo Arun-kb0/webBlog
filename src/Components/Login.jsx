@@ -1,6 +1,6 @@
 import React from 'react'
 import { auth, provider } from '../firebase-config'
-import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth'
+import { signInWithPopup, createUserWithEmailAndPassword ,signInWithEmailAndPassword } from 'firebase/auth'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -35,18 +35,32 @@ function Login() {
 
     // sigin in with email
     const onsubmit = (data) => {
-        createUserWithEmailAndPassword(auth, email, pswd)
-            .then(res => {
-                console.log(res)
-                const isAuth=true
-                localStorage.setItem("isAuth", true)
-                dispatch(setLoginUser(isAuth))
+        // createUserWithEmailAndPassword(auth, email, pswd)
+        //     .then(res => {
+        //         console.log(res)
+        //         const isAuth=true
+        //         localStorage.setItem("isAuth", true)
+        //         dispatch(setLoginUser(isAuth))
                 
-                navigate('/')
-            }).catch(err => {
-                console.log(err)
-            })
+        //         navigate('/')
+        //     }).catch(err => {
+        //         console.log(err)
+        //     })
+
+        signInWithEmailAndPassword(auth,email,pswd)
+        .then((res)=>{
+            console.log(res)
+            localStorage.setItem("isAuth", true)
+            const isAuth=true
+            dispatch(setLoginUser(isAuth))
+            navigate('/')
+        }).catch(err=>{
+            console.log(err)
+        })
+
     }
+
+    
 
     return (
         <div className='block justify-center items-center bg-gray-300 rounded-lg  mt-20 w-38 p-12 '>
@@ -78,8 +92,9 @@ function Login() {
 
             <div className='block justify-between mt-5' id="googleSignup">
                 <p className='ml-28 mb-5'>Or</p>
-                <p className='mb-2 '>Sign In With Google to Continue</p>
+                <p className='mb-2 text-center'>Sign In With Google</p>
                 <button className='btn ml-12'
+                
                     onClick={SignInwithGoogle}
                 >Sign In With Google</button>
             </div>

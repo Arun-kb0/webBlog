@@ -9,7 +9,6 @@ import { clearLoginUser } from '../features/login/loginSlice'
 function Navbar() {
 
   const { isAuth } = useSelector((store) => {
-    console.log(store)
     return store.login
   })
   const navigate = useNavigate()
@@ -19,7 +18,7 @@ function Navbar() {
     signOut(auth)
       .then(() => {
         localStorage.clear()
-        dispatch(clearLoginUser)
+        dispatch(clearLoginUser())
         navigate("/login")
 
       })
@@ -28,11 +27,14 @@ function Navbar() {
   return (
     <nav className='flex justify-center bg-gray-900 p-2' >
       <Link to="/"><span className='navlink'>Home</span></Link>
-      <Link to="/createpost"><span className='navlink'>Create post</span> </Link>
       {
         isAuth ?
-        <button onClick={signUserOut}
-        > <span className='navlink' >Logout</span></button>
+        <div>
+
+          <Link to="/createpost"><span className='navlink'>Create post</span> </Link>
+          <button onClick={signUserOut}
+          > <span className='navlink' >Logout</span></button>
+        </div>
 
           :
           <Link to="/login" ><span className='navlink'>Login</span> </Link>

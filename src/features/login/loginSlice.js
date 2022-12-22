@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    isAuth: false,
+    isAuth: localStorage.getItem("isAuth"),
     useDetails: [],
 };
 
@@ -16,6 +16,7 @@ const loginSlice = createSlice({
         },
         clearLoginUser:(state)=>{
             state.isAuth=false
+            console.log("from clearLoginUser")
             console.log(state.isAuth)
         }
     }
