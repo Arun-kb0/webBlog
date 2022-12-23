@@ -1,11 +1,11 @@
 import React from 'react'
 import { auth, provider } from '../firebase-config'
-import { signInWithPopup, createUserWithEmailAndPassword ,signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 // redux
-import {useDispatch} from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setLoginUser } from '../features/login/loginSlice'
 
 import { useNavigate } from 'react-router-dom'
@@ -18,86 +18,62 @@ function Login() {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
-  
-    //sign in with google -- not working 
-    const SignInwithGoogle = () => {
-        signInWithPopup(auth, provider)
-            .then(res => {
-                console.log(res)
-                const isAuth=true
-                localStorage.setItem("isAuth", true)
-                navigate('/')
-            }).catch(err => {
-                console.log(err.message)
-            })
-    }
-
 
     // sigin in with email
     const onsubmit = (data) => {
-        // createUserWithEmailAndPassword(auth, email, pswd)
-        //     .then(res => {
-        //         console.log(res)
-        //         const isAuth=true
-        //         localStorage.setItem("isAuth", true)
-        //         dispatch(setLoginUser(isAuth))
-                
-        //         navigate('/')
-        //     }).catch(err => {
-        //         console.log(err)
-        //     })
-
-        signInWithEmailAndPassword(auth,email,pswd)
-        .then((res)=>{
-            console.log(res)
-            localStorage.setItem("isAuth", true)
-            const isAuth=true
-            dispatch(setLoginUser(isAuth))
-            navigate('/')
-        }).catch(err=>{
-            console.log(err)
-        })
+        signInWithEmailAndPassword(auth, email, pswd)
+            .then((res) => {
+                console.log(res)
+                localStorage.setItem("isAuth", true)
+                const isAuth = true
+                dispatch(setLoginUser(isAuth))
+                navigate('/')
+            }).catch(err => {
+                console.log(err)
+            })
 
     }
 
-    
-
     return (
-        <div className='block justify-center items-center bg-gray-300 rounded-lg  mt-20 w-38 p-12 '>
-            <form id="emailSignup" className='block mt-8'>
+        <div className='grid place-content-center'>
+            <section className='login' >
+                <form id="emailSignup" className='grid w-64 '>
 
-                <input className={errors.Email ? 'loginInput border-red-500 text-red-300' : 'loginInput'}
-                    placeholder='Email' id='email' type='text'
-                    {...register('Email', {
-                        required: true,
-                        pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    })}
-                    onChange={(e) => setEmail(e.target.value)}
-                /><br />
-                {errors.Email && <p className='ml-5 text-red-500'>Enter a valid Email</p>}
-                <input className={errors.Password ? 'loginInput border-red-500' : 'loginInput'}
-                    placeholder='Password' id='pswd' type='password'
-                    {...register('Password', {
-                        required: true,
-                        minLength: 6,
-                        // pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,15}$/
-                    })}
-                    onChange={(e) => setPswd(e.target.value)}
-                /><br />
-                {errors.Password && <p className='ml-5  text-red-500'>Enter a valid Password</p>}
+                    <input className={errors.Email ? 'loginInput border-red-500 text-red-300' : 'loginInput'}
+                        placeholder='Email' id='email' type='text'
+                        {...register('Email', {
+                            required: true,
+                            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                        })}
+                        onChange={(e) => setEmail(e.target.value)}
+                    /><br />
+                    {errors.Email && <p className='ml-5 text-red-500'>Enter a valid Email</p>}
+                    <input className={errors.Password ? 'loginInput border-red-500' : 'loginInput'}
+                        placeholder='Password' id='pswd' type='password'
+                        {...register('Password', {
+                            required: true,
+                            minLength: 6,
+                            // pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,15}$/
+                        })}
+                        onChange={(e) => setPswd(e.target.value)}
+                    /><br />
+                    {errors.Password && <p className='ml-5  text-red-500'>Enter a valid Password</p>}
+                    <button className='btn' onClick={handleSubmit(onsubmit)}
+                    > Submit</button>
 
-                <button className='btn ml-20' onClick={handleSubmit(onsubmit)}
-                > Submit</button>
-            </form>
 
-            <div className='block justify-between mt-5' id="googleSignup">
-                <p className='ml-28 mb-5'>Or</p>
-                <p className='mb-2 text-center'>Sign In With Google</p>
-                <button className='btn ml-12'
-                
-                    onClick={SignInwithGoogle}
-                >Sign In With Google</button>
-            </div>
+                    <div className='grid place-content-center mt-5' id="googleSignup">
+                        <p className='mb-5 text-center'>Or</p>
+                        <p className='mb-2 text-center'>Create an Account</p>
+                        <button className='btn'
+                            onClick={() => {
+                                navigate("/signUp")
+                            }}
+                        >Sign Up</button>
+                    </div>
+                </form>
+
+            </section>
         </div>
     )
 }

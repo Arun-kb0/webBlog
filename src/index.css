@@ -16,18 +16,43 @@
 
  /* ++++++++++++  login ++++++++++++++++ */
 
+ .login{
+   @apply flex justify-center items-center  bg-gray-300 rounded-lg  p-12 
+         flex-wrap h-full sm:mt-24
+         xs:mt-10
+
+         
+ }
+
  .loginInput{
     @apply border border-gray-900 rounded-lg bg-slate-100 
-            mt-2 mb-2 h-8 p-2 min-w-full
+             h-8 p-2 min-w-full
             outline-none   border-transparent  focus:border-transparent focus:ring-0 
-
          focus-visible:border-blue-400
  }
 
  .btn{
-    @apply m-2 p-2 pl-4 pr-4 bg-green-500 rounded-lg text-sm text-white shadow-lg
+    @apply mt-2 p-2 pl-5 pr-5 justify-center bg-green-500 rounded-lg text-sm text-white shadow-lg
         hover:drop-shadow-lg hover:text-gray-200 
+        focus:bg-green-700
         
+ }
+
+ /* ++++++++++++  signup ++++++++++++++++ */
+
+ .signUp{
+   @apply flex justify-center items-center  bg-gray-300 rounded-lg  p-12 
+         flex-wrap h-full sm:mt-24
+         xs:mt-10
+ }
+ .signUpInput{
+   @apply border border-gray-900 rounded-lg bg-slate-100 
+   h-8 p-2 w-40 
+  outline-none   border-transparent  focus:border-transparent focus:ring-0 
+focus-visible:border-blue-400
+    
+   xs:mb-5
+   
  }
 
  /* ++++++++++++  create post ++++++++++++++++ */

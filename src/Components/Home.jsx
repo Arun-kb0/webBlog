@@ -15,7 +15,6 @@ function Home() {
   useEffect(() => {
     const getPost = async () => {
       const data = await getDocs(postCollectionRef)
-
       setPostLists(
         data.docs.map((doc) => {
           return { ...doc.data(), postId: doc.id }
@@ -23,6 +22,8 @@ function Home() {
       )
     }
     getPost()
+    console.log("postLists")
+    console.log(postLists[0])
   }, [])
 
   // delete post
@@ -36,9 +37,6 @@ function Home() {
     })
   }
 
-
-  console.log("postLists")
-  console.log(postLists)
 
 
   return (

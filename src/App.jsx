@@ -6,6 +6,7 @@ import CreatePostPage from './Pages/CreatePostPage'
 import LoginPage from './Pages/LoginPage'
 import Navbar from './Components/Navbar'
 import { useSelector } from 'react-redux'
+import SignUpPage from './Pages/SignUpPage'
 
 function App() {
   // need replace with redux
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/createpost" element={<CreatePostPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signUp" element={<SignUpPage/>} />
       </Routes>
     </BrowserRouter>
   )
