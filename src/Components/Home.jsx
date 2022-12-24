@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { collection, deleteDoc, getDocs, doc } from 'firebase/firestore'
+import { collection,getDocs } from 'firebase/firestore'
 import { db, auth } from '../firebase-config'
 import { IoTrashBinOutline } from 'react-icons/io5'
 import { BsBookmarkPlus } from 'react-icons/bs'
 import { MdOutlineFavoriteBorder } from 'react-icons/md'
 import { MdOutlineFavorite } from 'react-icons/md'
 
-import { useSelector } from 'react-redux'
-
+import { useSelector, useDispatch } from 'react-redux'
+import { deleteData } from '../features/firebase/crudSlice'
+import { set } from 'react-hook-form'
 
 function Home() {
   const [postLists, setPostLists] = useState([])
-  const postCollectionRef = collection(db, "posts")
+  const [isDone, setIsDone] = useState(false)
+
 
   const { isAuth } = useSelector((state) => {
     return state.login
   })
+  const dispatch = useDispatch()
 
+  const postCollectionRef = collection(db, "posts")
   useEffect(() => {
     const getPost = async () => {
       const data = await getDocs(postCollectionRef)
@@ -28,18 +32,21 @@ function Home() {
     }
     getPost()
     console.log("postLists")
-    console.log(postLists[0])
-  }, [postLists.length])
+    console.log(postLists)
+  }, [isDone])
 
-  // delete post
-  const deletePost = async (id) => {
-    console.log(id)
-    const postDoc = doc(db, "posts", id)
-    await deleteDoc(postDoc)
-
+  const deletePost = (id) => {
+    dispatch(
+      deleteData({
+        docName: "posts",
+        docId: id,
+      }
+      ))
     postLists.filter((post) => {
       post.postId != id
     })
+    if (isDone) setIsDone(false)
+    else setIsDone(true)
   }
 
 
@@ -50,32 +57,28 @@ function Home() {
 
       {
         postLists &&
-        postLists.map((post) => {
+        postLists.map((post,index) => {
 
-          return <div id="postContainer" className=' lg:ml-60 lg:mr-60 m-20 rounded-lg shadow-xl p-5 relative z-10 '>
+          return <div id="postContainer" className='lg:ml-60 lg:mr-60 m-20 rounded-lg shadow-xl p-5 relative z-10 '>
 
             <div id="postHeader" className='text-xl uppercase text-center font-semibold mb-4 '>
               <div className='flex justify-end'>
-
                 <div className='mr-5'>
                   {
                     isAuth && post.author.id === auth.currentUser.uid &&
-
                     <button onClick={() => {
                       deletePost(post.postId)
                     }}>
                       <IoTrashBinOutline id="topRowIcons" />
                     </button>
-                  }
+                  } 
                 </div>
                 <div className=''>
                   <button >
-
                     <BsBookmarkPlus id="topRowIcons" />
                   </button>
                 </div>
               </div>
-
 
               <div>
                 <h1 className='postTitle'>{post.title}</h1>
@@ -89,7 +92,7 @@ function Home() {
             <div className='mt-2'>
               <div>
                 <button>
-                <MdOutlineFavoriteBorder id="bottomIcons" />
+                  <MdOutlineFavoriteBorder id="bottomIcons" />
                 </button>
               </div>
 

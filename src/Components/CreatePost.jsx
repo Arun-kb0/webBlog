@@ -1,43 +1,48 @@
-import React, { useState,useEffect } from 'react'
-import { addDoc, collection } from 'firebase/firestore'
-import { db, auth } from '../firebase-config'
+import React, { useState, useEffect } from 'react'
+import { auth } from '../firebase-config'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import spaceImg from '../assets/space.png'
+import { addData } from '../features/firebase/crudSlice'
 
 function CreatePost() {
   const [title, setTitle] = useState('')
   const [postText, setPostText] = useState('')
 
   const navigate = useNavigate()
-  
-  const {isAuth} = useSelector((store)=>{
+
+  const { isAuth } = useSelector((store) => {
     return store.login
   })
+  const dispatch = useDispatch()
 
-  // firebase addDoc
-  const postCollectionRef = collection(db, "posts")
-  const createPost = async () => {
-    await addDoc(postCollectionRef, {
-      title: title,
-      postText: postText,
-      author: {
-        name: auth.currentUser.displayName,
-        id: auth.currentUser.uid
+  const createPost = () => {
+    dispatch(addData(
+      {
+        docName: "posts",
+        doc: {
+          title,
+          postText,
+          author: {
+            name: auth.currentUser.displayName,
+            id: auth.currentUser.uid
+          }
+        }
       }
-    })
-    navigate('/')
+    ))
+    navigate("/") 
   }
 
+
   useEffect(() => {
-    if(!isAuth) navigate('/login')
+    if (!isAuth) navigate('/login')
   }, [])
-  
+
 
   return (
     <section className='sm:mt-24 xs:mt-10'>
       <div className='createPost'
-      style={{background:`url(${spaceImg})`}}>
+        style={{ background: `url(${spaceImg})` }}>
         <h1 className='CreatePostFeildText text-4xl mb-6' >Create A Post</h1>
         <div className='pt-4 pl-10 pr-10'>
           <label className='CreatePostFeildText '>Title</label><br />
@@ -52,7 +57,7 @@ function CreatePost() {
         </div>
         <div className='flex justify-center p-4'>
           <button className='btn p-3 pl-4 pr-4'
-          onClick={createPost}>Submit Post</button>
+            onClick={createPost}>Submit Post</button>
         </div>
       </div>
     </section>
