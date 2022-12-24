@@ -6,11 +6,10 @@ import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { setLoginUser } from '../features/login/loginSlice'
 import { useNavigate } from 'react-router-dom'
-
+import spaceImg from '../assets/space.png'
 function SignUp() {
 
   const { register, handleSubmit, formState: { errors } } = useForm()
-
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -21,12 +20,15 @@ function SignUp() {
       .then(res => {
         console.log(res)
         const isAuth = true
+        const uname = res.user.displayName
         localStorage.setItem("isAuth", true)
-        dispatch(setLoginUser(isAuth))
+        return isAuth
       })
       // adding display name
-      .then(() => {
+      .then((isAuth) => {
         const username = data.fname + " " + data.lname
+        dispatch(setLoginUser({isAuth,username}))
+
         const user = auth.currentUser;
         updateProfile(user, { displayName: username })
         return username
@@ -49,10 +51,11 @@ function SignUp() {
       })
   }
 
-
+  
   return (
-    <div className='grid place-content-center'>
-      <section className='signUp' >
+    <div className='grid place-content-center sm:mt-16'>
+      <section className='signUp' 
+       style={{background:`url(${spaceImg})`}}>
         <form id="emailSignup" className='grid sm:w-80 xs:64   '>
 
           <div className='sm:flex sm:mb-2'>

@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { collection, deleteDoc, getDocs, doc } from 'firebase/firestore'
 import { db, auth } from '../firebase-config'
-import { FcEmptyTrash } from 'react-icons/fc'
+import { IoTrashBinOutline } from 'react-icons/io5'
+import { BsBookmarkPlus } from 'react-icons/bs'
+import { MdOutlineFavoriteBorder } from 'react-icons/md'
+import { MdOutlineFavorite } from 'react-icons/md'
+
 import { useSelector } from 'react-redux'
+
 
 function Home() {
   const [postLists, setPostLists] = useState([])
@@ -24,7 +29,7 @@ function Home() {
     getPost()
     console.log("postLists")
     console.log(postLists[0])
-  }, [])
+  }, [postLists.length])
 
   // delete post
   const deletePost = async (id) => {
@@ -40,35 +45,55 @@ function Home() {
 
 
   return (
-    <section className='block justify-center items-center mt-10'>
+
+    <section className='block justify-center items-center mt-10' >
 
       {
         postLists &&
         postLists.map((post) => {
 
-          return <div id="postContainer" className=' lg:ml-60 lg:mr-60 m-20 rounded-lg shadow-xl p-5 '>
-            <div id="postHeader" className='text-xl uppercase text-center text-red-700 font-semibold mb-4 '>
-              <div className='text-end'>
-                {
-                  isAuth && post.author.id === auth.currentUser.uid &&
+          return <div id="postContainer" className=' lg:ml-60 lg:mr-60 m-20 rounded-lg shadow-xl p-5 relative z-10 '>
 
-                  <button onClick={() => {
-                    // console.log(auth.currentUser.uid)
-                    // console.log(post.author.id)
-                    deletePost(post.postId)
-                  }}>
-                    <FcEmptyTrash />
+            <div id="postHeader" className='text-xl uppercase text-center font-semibold mb-4 '>
+              <div className='flex justify-end'>
+
+                <div className='mr-5'>
+                  {
+                    isAuth && post.author.id === auth.currentUser.uid &&
+
+                    <button onClick={() => {
+                      deletePost(post.postId)
+                    }}>
+                      <IoTrashBinOutline id="topRowIcons" />
+                    </button>
+                  }
+                </div>
+                <div className=''>
+                  <button >
+
+                    <BsBookmarkPlus id="topRowIcons" />
                   </button>
-                }
+                </div>
               </div>
+
+
               <div>
-                <h1>{post.title}</h1>
+                <h1 className='postTitle'>{post.title}</h1>
               </div>
             </div>
-            <div id="postTextContainer" className='text-zinc-700'>
+            <div id="postTextContainer" className='text-zinc-500 '>
               {post.postText}
             </div>
-            {/* <h3>@{post.author}</h3> */}
+            <h3 className='mt-5 text-zinc-400'>@{post.author.name}</h3>
+
+            <div className='mt-2'>
+              <div>
+                <button>
+                <MdOutlineFavoriteBorder id="bottomIcons" />
+                </button>
+              </div>
+
+            </div>
           </div>
         })
       }

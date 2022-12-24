@@ -3,7 +3,7 @@ import { auth, provider } from '../firebase-config'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-
+import spaceImg from '../assets/space.png'
 // redux
 import { useDispatch } from 'react-redux'
 import { setLoginUser } from '../features/login/loginSlice'
@@ -24,9 +24,10 @@ function Login() {
         signInWithEmailAndPassword(auth, email, pswd)
             .then((res) => {
                 console.log(res)
-                localStorage.setItem("isAuth", true)
+                const username = res.user.displayName
                 const isAuth = true
-                dispatch(setLoginUser(isAuth))
+                localStorage.setItem("isAuth", true)
+                dispatch(setLoginUser({isAuth,username}))
                 navigate('/')
             }).catch(err => {
                 console.log(err)
@@ -36,7 +37,9 @@ function Login() {
 
     return (
         <div className='grid place-content-center'>
-            <section className='login' >
+            <section className='login'
+                style={{ background: `url(${spaceImg})` }}>
+
                 <form id="emailSignup" className='grid w-64 '>
 
                     <input className={errors.Email ? 'loginInput border-red-500 text-red-300' : 'loginInput'}
@@ -63,8 +66,8 @@ function Login() {
 
 
                     <div className='grid place-content-center mt-5' id="googleSignup">
-                        <p className='mb-5 text-center'>Or</p>
-                        <p className='mb-2 text-center'>Create an Account</p>
+                        <p className='mb-5 text-center text-zinc-200'>Or</p>
+                        <p className='mb-2 text-center text-zinc-200'>Create an Account</p>
                         <button className='btn'
                             onClick={() => {
                                 navigate("/signUp")

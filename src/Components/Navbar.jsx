@@ -25,21 +25,29 @@ function Navbar() {
   }
 
   return (
-    <nav className='flex justify-center bg-gray-900 p-2' >
-      <Link to="/"><span className='navlink'>Home</span></Link>
-      {
-        isAuth ?
-        <div>
+    // <nav className='flex justify-center bg-gray-900 p-2 ' >
+    <nav className='fixed top-0 w-full  bg-gray-900 p-2 z-50' >
+      <section className='flex ml-20'>
 
-          <Link to="/createpost"><span className='navlink'>Create post</span> </Link>
-          <button onClick={signUserOut}
-          > <span className='navlink' >Logout</span></button>
-        </div>
+        <Link to="/"><span className='navlink'>Home</span></Link>
+        {
+          isAuth ?
+            <div>
+              <Link to="/createpost"><span className='navlink'>Create post</span> </Link>
+              <button onClick={signUserOut}>
+                <span className='navlink' >Logout</span>
+              </button>
+            </div>
+            :
+            <div>
+              <Link to="/login" >
+                <span className='navlink'>Login</span>
+              </Link>
+            </div>
 
-          :
-          <Link to="/login" ><span className='navlink'>Login</span> </Link>
+        }
+      </section>
 
-      }
     </nav>
   )
 }

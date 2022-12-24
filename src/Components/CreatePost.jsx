@@ -3,6 +3,7 @@ import { addDoc, collection } from 'firebase/firestore'
 import { db, auth } from '../firebase-config'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import spaceImg from '../assets/space.png'
 
 function CreatePost() {
   const [title, setTitle] = useState('')
@@ -34,8 +35,9 @@ function CreatePost() {
   
 
   return (
-    <section className=''>
-      <div className='createPost'>
+    <section className='sm:mt-24 xs:mt-10'>
+      <div className='createPost'
+      style={{background:`url(${spaceImg})`}}>
         <h1 className='CreatePostFeildText text-4xl mb-6' >Create A Post</h1>
         <div className='pt-4 pl-10 pr-10'>
           <label className='CreatePostFeildText '>Title</label><br />

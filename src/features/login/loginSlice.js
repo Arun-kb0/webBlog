@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
     isAuth: localStorage.getItem("isAuth"),
+    username:undefined,
     useDetails: [],
 };
 
@@ -11,8 +12,11 @@ const loginSlice = createSlice({
     reducers: {
         setLoginUser: (state, action) => {
             console.log("from setLoginUser")
-            state.isAuth = action.payload
-            console.log(state.isAuth)
+            console.log(action.payload)
+            state.isAuth = action.payload.isAuth
+            state.username = action.payload.username
+            // console.log(state.isAuth)
+            // console.log(state.username)
         },
         clearLoginUser:(state)=>{
             state.isAuth=false
