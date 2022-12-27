@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { db } from "../../firebase-config";
-import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, arrayUnion, updateDoc, setDoc } from "firebase/firestore";
 
 
 const initialState = {
@@ -32,9 +32,45 @@ const crudSlice = createSlice({
             console.log("deleted")
             state.isLoading = false
         },
-        
+        setSavedPosts: async (state, action) => {
+            state.isLoading=true
+            console.log("setSavedPosts")
+
+            const data = action.payload
+            console.log(data)
+            const userActionRef = doc(db, data.docName, data.userData.userId)
+            const unionRes = updateDoc(userActionRef, {
+                savedPosts: arrayUnion(`${data.userData.savedPosts}`)
+            })
+
+            if (unionRes) {
+                state.isLoading=false
+                state.isfinished=true
+                console.log(unionRes)
+                console.log("savedPosts updated --firestore")
+
+            }
+        },
+        setLikedPosts: async (state, action) => {
+            state.isLoading=false
+            console.log("setLikedPosts")
+
+            const data = action.payload
+            console.log(data)
+            const userActionRef = doc(db, data.docName, data.userData.userId)
+            const unionRes = await updateDoc(userActionRef, {
+                likedPosts: arrayUnion(`${data.userData.likedPosts}`)
+            })
+
+            if (unionRes) {
+                state.isLoading=false
+                state.isfinished=true
+                console.log(unionRes)
+                console.log("likedPosts updated --firestore")
+            }
+        }
     }
 })
 
-export const { addData, deleteData } = crudSlice.actions
+export const { addData, deleteData, setSavedPosts, setLikedPosts } = crudSlice.actions
 export default crudSlice.reducer

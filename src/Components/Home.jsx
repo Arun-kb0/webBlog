@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { collection,getDocs } from 'firebase/firestore'
+import { collection, getDocs } from 'firebase/firestore'
 import { db, auth } from '../firebase-config'
 import { IoTrashBinOutline } from 'react-icons/io5'
 import { BsBookmarkPlus } from 'react-icons/bs'
@@ -7,13 +7,13 @@ import { MdOutlineFavoriteBorder } from 'react-icons/md'
 import { MdOutlineFavorite } from 'react-icons/md'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { deleteData } from '../features/firebase/crudSlice'
+import { setSavedPosts, setLikedPosts ,deleteData } from '../features/firebase/crudSlice'
 import { set } from 'react-hook-form'
 
 function Home() {
   const [postLists, setPostLists] = useState([])
   const [isDone, setIsDone] = useState(false)
-
+  const [saved, setSaved] = useState([])
 
   const { isAuth } = useSelector((state) => {
     return state.login
@@ -49,15 +49,42 @@ function Home() {
     else setIsDone(true)
   }
 
+  const handleSavePost = (id) => {
+    console.log(id)
+    console.log(auth.currentUser.uid)
+    setSaved(id)
+    
+    dispatch(setSavedPosts(
+      {
+        docName:"userActions",
+        userData:{
+          userId:auth.currentUser.uid,
+          likedPosts:[null],
+          savedPosts:[id]
+      }
+    }
+    ))
+  }
 
+  const handleLiked = (id)=>{
+    dispatch(setLikedPosts(
+      {
+        docName:"userActions",
+        userData:{
+          userId:auth.currentUser.uid,
+          likedPosts:[id],
+          savedPosts:[null]
+        }
+      }
+      ))
+  }
 
   return (
 
     <section className='block justify-center items-center mt-10' >
-
       {
         postLists &&
-        postLists.map((post,index) => {
+        postLists.map((post, index) => {
 
           return <div id="postContainer" className='lg:ml-60 lg:mr-60 m-20 rounded-lg shadow-xl p-5 relative z-10 '>
 
@@ -71,10 +98,10 @@ function Home() {
                     }}>
                       <IoTrashBinOutline id="topRowIcons" />
                     </button>
-                  } 
+                  }
                 </div>
                 <div className=''>
-                  <button >
+                  <button onClick={() => { handleSavePost(post.postId) }}>
                     <BsBookmarkPlus id="topRowIcons" />
                   </button>
                 </div>
@@ -90,8 +117,9 @@ function Home() {
             <h3 className='mt-5 text-zinc-400'>@{post.author.name}</h3>
 
             <div className='mt-2'>
+              {/* like btn */}
               <div>
-                <button>
+                <button onClick={()=>{handleLiked(post.postId)}}>
                   <MdOutlineFavoriteBorder id="bottomIcons" />
                 </button>
               </div>

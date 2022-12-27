@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux'
 import { setLoginUser } from '../features/login/loginSlice'
 import { useNavigate } from 'react-router-dom'
 import spaceImg from '../assets/space.png'
+import { createUSer } from '../features/firebase/authSlice'
 function SignUp() {
 
   const { register, handleSubmit, formState: { errors } } = useForm()
@@ -44,6 +45,8 @@ function SignUp() {
           console.log(us)
         }
         addUserDetails()
+        dispatch(createUSer({
+          uid:auth.currentUser.uid}))
         navigate('/')
       })
       .catch(err => {
