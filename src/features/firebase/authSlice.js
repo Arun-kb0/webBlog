@@ -1,6 +1,8 @@
 import { createAction, createSlice } from "@reduxjs/toolkit"
-import { db,auth } from "../../firebase-config"
-import { setDoc,doc } from "firebase/firestore"
+import { db, auth } from "../../firebase-config"
+import { setDoc, doc, collection, addDoc } from "firebase/firestore"
+import { signInWithEmailAndPassword } from 'firebase/auth'
+
 
 const initialState = {
     isLoading: true,
@@ -11,18 +13,19 @@ const authSlice = createSlice({
     name: 'auth0',
     initialState,
     reducers: {
-        createUSer: (state, action) => {
+        createUSer: async (state, action) => {
             console.log("createUser")
             const data = action.payload
             console.log(data)
 
-            const userActionRef = doc(db,"userActions",data.uid)
-            setDoc(userActionRef,{
-                userId:auth.currentUser.uid,
-                likedPosts:[],
-                savedPosts:[]
-              })
-            
+            const userCollectionRef = doc(db, "users", auth.currentUser.uid)
+            await setDoc(userCollectionRef, {
+                name: data.username,
+                userId: auth.currentUser.uid,
+                likedPosts: [],
+                savedPosts: []
+            })
+
         }
     }
 })

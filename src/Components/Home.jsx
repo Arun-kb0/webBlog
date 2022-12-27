@@ -7,18 +7,21 @@ import { MdOutlineFavoriteBorder } from 'react-icons/md'
 import { MdOutlineFavorite } from 'react-icons/md'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { setSavedPosts, setLikedPosts ,deleteData } from '../features/firebase/crudSlice'
+import { setSavedPosts, setLikedPosts, deleteData } from '../features/firebase/crudSlice'
 import { set } from 'react-hook-form'
 
 function Home() {
   const [postLists, setPostLists] = useState([])
   const [isDone, setIsDone] = useState(false)
   const [saved, setSaved] = useState([])
+  const [likeStatus, setLikeStatus] = useState(false)
 
   const { isAuth } = useSelector((state) => {
     return state.login
   })
   const dispatch = useDispatch()
+
+  const timeStamp = Date.now()
 
   const postCollectionRef = collection(db, "posts")
   useEffect(() => {
@@ -53,30 +56,32 @@ function Home() {
     console.log(id)
     console.log(auth.currentUser.uid)
     setSaved(id)
-    
+
     dispatch(setSavedPosts(
       {
-        docName:"userActions",
-        userData:{
+        docName: "users",
+        userData: {
           userId:auth.currentUser.uid,
-          likedPosts:[null],
-          savedPosts:[id]
+          likedPosts: [],
+          savedPosts: [id]
+        }
       }
-    }
     ))
   }
 
-  const handleLiked = (id)=>{
+  const handleLiked = (id) => {
+
     dispatch(setLikedPosts(
       {
-        docName:"userActions",
-        userData:{
+        docName: "users",
+        userData: {
           userId:auth.currentUser.uid,
           likedPosts:[id],
-          savedPosts:[null]
+          savedPosts: []
         }
       }
-      ))
+    ))
+
   }
 
   return (
@@ -101,6 +106,7 @@ function Home() {
                   }
                 </div>
                 <div className=''>
+                  {/*  * save btn */}
                   <button onClick={() => { handleSavePost(post.postId) }}>
                     <BsBookmarkPlus id="topRowIcons" />
                   </button>
@@ -119,8 +125,10 @@ function Home() {
             <div className='mt-2'>
               {/* like btn */}
               <div>
-                <button onClick={()=>{handleLiked(post.postId)}}>
-                  <MdOutlineFavoriteBorder id="bottomIcons" />
+                <button className=''
+                onClick={() => { handleLiked(post.postId) }}>
+                  <MdOutlineFavoriteBorder id="bottomIcons"
+                   className='focus:bg-red-600'/>
                 </button>
               </div>
 

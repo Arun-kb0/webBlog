@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { db } from "../../firebase-config";
-import { addDoc, collection, deleteDoc, doc, arrayUnion, updateDoc, setDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, arrayUnion, updateDoc, query, where, getDocs, collectionGroup, } from "firebase/firestore";
 
 
 const initialState = {
@@ -33,7 +33,7 @@ const crudSlice = createSlice({
             state.isLoading = false
         },
         setSavedPosts: async (state, action) => {
-            state.isLoading=true
+            state.isLoading = true
             console.log("setSavedPosts")
 
             const data = action.payload
@@ -44,31 +44,33 @@ const crudSlice = createSlice({
             })
 
             if (unionRes) {
-                state.isLoading=false
-                state.isfinished=true
+                state.isLoading = false
+                state.isfinished = true
                 console.log(unionRes)
                 console.log("savedPosts updated --firestore")
 
             }
         },
         setLikedPosts: async (state, action) => {
-            state.isLoading=false
+            state.isLoading = false
             console.log("setLikedPosts")
 
             const data = action.payload
             console.log(data)
             const userActionRef = doc(db, data.docName, data.userData.userId)
+
             const unionRes = await updateDoc(userActionRef, {
                 likedPosts: arrayUnion(`${data.userData.likedPosts}`)
             })
 
             if (unionRes) {
-                state.isLoading=false
-                state.isfinished=true
+                state.isLoading = false
+                state.isfinished = true
                 console.log(unionRes)
                 console.log("likedPosts updated --firestore")
             }
-        }
+        },
+
     }
 })
 

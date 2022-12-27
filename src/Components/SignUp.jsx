@@ -36,17 +36,16 @@ function SignUp() {
       })
       // adding user details to users collection  
       .then((username) => {
-        const userCollectionRef = collection(db, "users")
-        const addUserDetails = async () => {
-          var us = await addDoc(userCollectionRef, {
-            userId: auth.currentUser.uid,
-            name: username
-          })
-          console.log(us)
-        }
-        addUserDetails()
-        dispatch(createUSer({
-          uid:auth.currentUser.uid}))
+        // const userCollectionRef = collection(db, "users")
+        // const addUserDetails = async () => {
+        //   var us = await addDoc(userCollectionRef, {
+        //     userId: auth.currentUser.uid,
+        //     name: username
+        //   })
+        //   console.log(us)
+        // }
+        // addUserDetails()
+        dispatch(createUSer({username}))
         navigate('/')
       })
       .catch(err => {

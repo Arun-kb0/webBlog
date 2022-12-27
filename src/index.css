@@ -90,11 +90,11 @@ focus-visible:border-blue-400
 }
 
 #topRowIcons{
-  @apply text-zinc-600 hover:text-zinc-900 
+  @apply text-zinc-500 hover:text-zinc-900 active:text-red-600
 }
 
 #bottomIcons{
-  @apply  text-zinc-600 text-2xl
+  @apply  text-zinc-500 text-2xl hover:text-zinc-900 active:text-red-600
 }
 
 }
