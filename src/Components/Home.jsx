@@ -7,25 +7,40 @@ import { MdOutlineFavoriteBorder } from 'react-icons/md'
 import { MdOutlineFavorite } from 'react-icons/md'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { setSavedPosts, setLikedPosts, deleteData } from '../features/firebase/crudSlice'
-import { set } from 'react-hook-form'
+import { setSavedPosts, setLikedPosts, deleteData, getUserIntractions } from '../features/firebase/crudSlice'
 
 function Home() {
   const [postLists, setPostLists] = useState([])
   const [isDone, setIsDone] = useState(false)
   const [saved, setSaved] = useState([])
-  const [likeStatus, setLikeStatus] = useState(false)
+  const [liked, setLiked] = useState([])
 
   const { isAuth } = useSelector((state) => {
     return state.login
   })
+  const { likedPosts, savedPosts } = useSelector((state) => {
+    return state.crud
+  })
   const dispatch = useDispatch()
-
   const timeStamp = Date.now()
 
-  const postCollectionRef = collection(db, "posts")
   useEffect(() => {
+
+    if (auth.currentUser) {
+      const {likedPosts,savedPosts} =dispatch(
+        getUserIntractions(auth.currentUser.uid)
+        )
+      
+      setLiked(likedPosts)
+      setSaved(savedPosts)
+      console.log(likedPosts)
+
+      // console.log(saved)
+
+    }
+
     const getPost = async () => {
+      const postCollectionRef = collection(db, "posts")
       const data = await getDocs(postCollectionRef)
       setPostLists(
         data.docs.map((doc) => {
@@ -34,8 +49,8 @@ function Home() {
       )
     }
     getPost()
-    console.log("postLists")
-    console.log(postLists)
+    // console.log("postLists")
+    // console.log(postLists)
   }, [isDone])
 
   const deletePost = (id) => {
@@ -61,7 +76,7 @@ function Home() {
       {
         docName: "users",
         userData: {
-          userId:auth.currentUser.uid,
+          userId: auth.currentUser.uid,
           likedPosts: [],
           savedPosts: [id]
         }
@@ -70,17 +85,17 @@ function Home() {
   }
 
   const handleLiked = (id) => {
-
     dispatch(setLikedPosts(
       {
         docName: "users",
         userData: {
-          userId:auth.currentUser.uid,
-          likedPosts:[id],
+          userId: auth.currentUser.uid,
+          likedPosts: [id],
           savedPosts: []
         }
       }
     ))
+
 
   }
 
@@ -126,9 +141,9 @@ function Home() {
               {/* like btn */}
               <div>
                 <button className=''
-                onClick={() => { handleLiked(post.postId) }}>
+                  onClick={() => { handleLiked(post.postId) }}>
                   <MdOutlineFavoriteBorder id="bottomIcons"
-                   className='focus:bg-red-600'/>
+                    className='focus:bg-red-600' />
                 </button>
               </div>
 
