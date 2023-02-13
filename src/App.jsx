@@ -10,9 +10,9 @@ import SignUpPage from './Pages/SignUpPage'
 
 function App() {
   // need replace with redux
-  const {isAuth} = useSelector((state)=>{
-   return  state.login
-  })
+  // const {isAuth} = useSelector((state)=>{
+  //  return  state.login
+  // })
   return (
     <BrowserRouter>
       <Navbar />

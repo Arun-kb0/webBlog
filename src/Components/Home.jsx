@@ -1,65 +1,91 @@
 import React, { useEffect, useState } from 'react'
-import { collection, getDocs } from 'firebase/firestore'
 import { db, auth } from '../firebase-config'
 import { IoTrashBinOutline } from 'react-icons/io5'
 import { BsBookmarkPlus } from 'react-icons/bs'
-import { MdOutlineFavoriteBorder } from 'react-icons/md'
+import { MdNoAccounts, MdOutlineFavoriteBorder } from 'react-icons/md'
 import { MdOutlineFavorite } from 'react-icons/md'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { setSavedPosts, setLikedPosts, deleteData, getUserIntractions } from '../features/firebase/crudSlice'
+import { useNavigate } from 'react-router-dom'
+
+// import { setSavedPosts, setLikedPosts, deleteData, getUserIntractions } from '../features/firebase/crudSlice'
+// import { collection, getDocs } from 'firebase/firestore'
+
+import { getPost, savePost, likePost, deletePost } from '../features/redux/firebase/fireStore/firestoreActions'
 
 function Home() {
   const [postLists, setPostLists] = useState([])
   const [isDone, setIsDone] = useState(false)
-  const [saved, setSaved] = useState([])
-  const [liked, setLiked] = useState([])
+  // const [saved, setSaved] = useState([])
+  // const [liked, setLiked] = useState([])
 
-  const { isAuth } = useSelector((state) => {
-    return state.login
-  })
-  const { likedPosts, savedPosts } = useSelector((state) => {
-    return state.crud
-  })
+  // const { isAuth } = useSelector((state) => {
+  //   return state.login
+  // })
+  // const { likedPosts, savedPosts } = useSelector((state) => {
+  //   return state.crud
+  // })
+
   const dispatch = useDispatch()
+  const { postArray, isEmptyArray, arraySize, isPostsChanged } = useSelector((store) => {
+    return store.firestoreDB
+  })
+
+  const { isAuth } = useSelector((store) => {
+    return store.user
+  })
+
+
+
   const timeStamp = Date.now()
+  const navigate = useNavigate()
 
+  // ! need to fix reloading
   useEffect(() => {
+    dispatch(getPost())
+    console.log(postArray)
+    console.log(isEmptyArray)
+    console.log(arraySize)
 
-    if (auth.currentUser) {
-      const {likedPosts,savedPosts} =dispatch(
-        getUserIntractions(auth.currentUser.uid)
-        )
-      
-      setLiked(likedPosts)
-      setSaved(savedPosts)
-      console.log(likedPosts)
+    isEmptyArray == false && setPostLists(
+      postArray.map((doc) => {
+        // console.log(doc.data())
+        return { ...doc.data(), postId: doc.id }
+      })
+    )
+    //  ! below code needed
 
-      // console.log(saved)
+    //   if (auth.currentUser) {
+    //     const { likedPosts, savedPosts } = dispatch(
+    //       getUserIntractions(auth.currentUser.uid)
+    //     )
 
-    }
+    //     setLiked(likedPosts)
+    //     setSaved(savedPosts)
+    //     console.log(likedPosts)
 
-    const getPost = async () => {
-      const postCollectionRef = collection(db, "posts")
-      const data = await getDocs(postCollectionRef)
-      setPostLists(
-        data.docs.map((doc) => {
-          return { ...doc.data(), postId: doc.id }
-        })
-      )
-    }
-    getPost()
-    // console.log("postLists")
-    // console.log(postLists)
-  }, [isDone])
+    //     console.log(saved)
 
-  const deletePost = (id) => {
-    dispatch(
-      deleteData({
-        docName: "posts",
-        docId: id,
-      }
-      ))
+    //   }
+
+    //   const getPost = async () => {
+    //     const postCollectionRef = collection(db, "posts")
+    //     const data = await getDocs(postCollectionRef)
+    //     setPostLists(
+    //       data.docs.map((doc) => {
+    //         return { ...doc.data(), postId: doc.id }
+    //       })
+    //     )
+    //   }
+    //   getPost()
+    //   console.log("postLists")
+    //   console.log(postLists)
+  }, []) 
+
+
+  const handldeDeletePost = (id) => {
+    dispatch(deletePost(id))
+
     postLists.filter((post) => {
       post.postId != id
     })
@@ -67,36 +93,17 @@ function Home() {
     else setIsDone(true)
   }
 
+
   const handleSavePost = (id) => {
     console.log(id)
     console.log(auth.currentUser.uid)
-    setSaved(id)
 
-    dispatch(setSavedPosts(
-      {
-        docName: "users",
-        userData: {
-          userId: auth.currentUser.uid,
-          likedPosts: [],
-          savedPosts: [id]
-        }
-      }
-    ))
+    isAuth ? dispatch(savePost(id)) : navigate('/login')
   }
 
   const handleLiked = (id) => {
-    dispatch(setLikedPosts(
-      {
-        docName: "users",
-        userData: {
-          userId: auth.currentUser.uid,
-          likedPosts: [id],
-          savedPosts: []
-        }
-      }
-    ))
 
-
+    isAuth ? dispatch(likePost(id)) : navigate('/login')
   }
 
   return (
@@ -114,7 +121,7 @@ function Home() {
                   {
                     isAuth && post.author.id === auth.currentUser.uid &&
                     <button onClick={() => {
-                      deletePost(post.postId)
+                      handldeDeletePost(post.postId)
                     }}>
                       <IoTrashBinOutline id="topRowIcons" />
                     </button>
@@ -151,8 +158,10 @@ function Home() {
           </div>
         })
       }
+
     </section>
   )
 }
+
 
 export default Home

@@ -1,27 +1,32 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { signOut } from 'firebase/auth'
-import { auth } from '../firebase-config'
-import { useSelector, useDispatch } from 'react-redux'
-import { clearLoginUser } from '../features/login/loginSlice'
+import { useDispatch } from 'react-redux'
+
+// import { clearLoginUser } from '../features/login/loginSlice'
+// import { auth } from '../firebase-config'
+// import { signOut } from 'firebase/auth'
+
+import { userLogout } from '../features/redux/firebase/auth/authAction'
 
 
 function Navbar() {
-
-  const { isAuth } = useSelector((store) => {
-    return store.login
-  })
+  const isAuth = true
+  // const { isAuth } = useSelector((store) => {
+  //   return store.login
+  // })
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const signUserOut = () => {
-    signOut(auth)
-      .then(() => {
-        localStorage.clear()
-        dispatch(clearLoginUser())
-        navigate("/login")
+    dispatch(userLogout())
+    navigate("/login")
+    // signOut(auth)
+    //   .then(() => {
+    //     localStorage.clear()
+    //     dispatch(clearLoginUser())
+    //     navigate("/login")
 
-      })
+    //   })
   }
 
   return (

@@ -1,63 +1,51 @@
-import React from 'react'
-import { auth, db } from '../firebase-config'
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { addDoc, collection } from 'firebase/firestore'
+import React, { useState, useEffect } from 'react'
+
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
-import { setLoginUser } from '../features/login/loginSlice'
-import { useNavigate } from 'react-router-dom'
 import spaceImg from '../assets/space.png'
-import { createUSer } from '../features/firebase/authSlice'
+import { useNavigate } from 'react-router-dom'
+
+import { useDispatch, useSelector } from 'react-redux'
+import { registerInitiate } from '../features/redux/firebase/auth/authAction'
+
 function SignUp() {
 
   const { register, handleSubmit, formState: { errors } } = useForm()
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const { currentUser,isAuth } = useSelector((store) => {
+    return store.user
+  })
 
+ 
 
   const onsubmit = (data) => {
-    createUserWithEmailAndPassword(auth, data.Email, data.Password)
-      .then(res => {
-        console.log(res)
-        const isAuth = true
-        const uname = res.user.displayName
-        localStorage.setItem("isAuth", true)
-        return isAuth
-      })
-      // adding display name
-      .then((isAuth) => {
-        const username = data.fname + " " + data.lname
-        dispatch(setLoginUser({isAuth,username}))
+    console.log("onSubmit")
+    console.log(data)
 
-        const user = auth.currentUser;
-        updateProfile(user, { displayName: username })
-        return username
-      })
-      // adding user details to users collection  
-      .then((username) => {
-        // const userCollectionRef = collection(db, "users")
-        // const addUserDetails = async () => {
-        //   var us = await addDoc(userCollectionRef, {
-        //     userId: auth.currentUser.uid,
-        //     name: username
-        //   })
-        //   console.log(us)
-        // }
-        // addUserDetails()
-        dispatch(createUSer({username}))
-        navigate('/')
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    dispatch(registerInitiate(
+        data.Email,
+        data.Password,
+        data.fname + " " + data.lname
+      ))
+
+    
   }
 
-  
+  useEffect(() => {
+    if (currentUser) {
+      console.log("is Auth");
+      console.log(isAuth)
+      navigate('/')
+    }
+  }, [isAuth])
+
+
+
   return (
     <div className='grid place-content-center sm:mt-16'>
-      <section className='signUp' 
-       style={{background:`url(${spaceImg})`}}>
+      <section className='signUp'
+        style={{ background: `url(${spaceImg})` }}>
         <form id="emailSignup" className='grid sm:w-80 xs:64   '>
 
           <div className='sm:flex sm:mb-2'>

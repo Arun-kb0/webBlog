@@ -1,14 +1,16 @@
 import React from 'react'
-import { auth, } from '../firebase-config'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { useState } from 'react'
+
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import spaceImg from '../assets/space.png'
 // redux
-import { useDispatch } from 'react-redux'
-import { setLoginUser } from '../features/login/loginSlice'
+import { useDispatch, useSelector } from 'react-redux'
+// import { setLoginUser } from '../features/login/loginSlice'
+// import { auth, } from '../firebase-config'
+// import { signInWithEmailAndPassword } from 'firebase/auth'
 
 import { useNavigate } from 'react-router-dom'
+import { userLogin } from '../features/redux/firebase/auth/authAction'
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -19,21 +21,41 @@ function Login() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    const { isAuth, currentUser } = useSelector((store) => {
+        return store.user
+
+    })
+
     // sigin in with email
     const onsubmit = (data) => {
-        signInWithEmailAndPassword(auth, email, pswd)
-            .then((res) => {
-                console.log(res)
-                const username = res.user.displayName
-                const isAuth = true
-                localStorage.setItem("isAuth", true)
-                dispatch(setLoginUser({isAuth,username}))
-                navigate('/')
-            }).catch(err => {
-                console.log(err)
-            })
+
+        dispatch(userLogin(data))
+
+        // signInWithEmailAndPassword(auth, email, pswd)
+        //     .then((res) => {
+        //         console.log(res)
+        //         const username = res.user.displayName
+        //         const isAuth = true
+        //         localStorage.setItem("isAuth", true)
+        //         dispatch(setLoginUser({isAuth,username}))
+        //         navigate('/')
+        //     }).catch(err => {
+        //         console.log(err)
+        //     })
+
 
     }
+
+    useEffect(() => {
+        if (isAuth) {
+
+            console.log("currentUser")
+            console.log(currentUser)
+            navigate('/')
+        }
+
+    }, [isAuth])
+
 
     return (
         <div className='grid place-content-center'>
