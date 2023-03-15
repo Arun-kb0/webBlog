@@ -28,14 +28,11 @@ function SignUp() {
         data.Password,
         data.fname + " " + data.lname
       ))
-
     
   }
 
   useEffect(() => {
-    if (currentUser) {
-      console.log("is Auth");
-      console.log(isAuth)
+    if (isAuth) {
       navigate('/')
     }
   }, [isAuth])

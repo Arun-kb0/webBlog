@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 
 // import { clearLoginUser } from '../features/login/loginSlice'
 // import { auth } from '../firebase-config'
@@ -10,10 +10,9 @@ import { userLogout } from '../features/redux/firebase/auth/authAction'
 
 
 function Navbar() {
-  const isAuth = true
-  // const { isAuth } = useSelector((store) => {
-  //   return store.login
-  // })
+  const { isAuth } = useSelector((store) => {
+    return store.user
+  })
   const navigate = useNavigate()
   const dispatch = useDispatch()
 

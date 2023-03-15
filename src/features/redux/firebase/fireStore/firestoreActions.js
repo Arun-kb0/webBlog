@@ -7,7 +7,7 @@ import {
 } from "../../constants";
 import { auth, db } from "../../../../firebase-config";
 import { async } from "@firebase/util";
-import { collection, getDocs, doc, updateDoc, arrayUnion, addDoc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, arrayUnion, addDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { MdNoSim } from "react-icons/md";
 
 // * get post
@@ -132,10 +132,27 @@ export const getPost = () => {
             const postCollectionRef = collection(db, "posts")
             const data = await getDocs(postCollectionRef)
             console.log(data)
-            dispatch(getPostSucccess({ docs: data.docs, isEmpty: data.empty, size: data.size }))
+
+            // console.log("userData")
+            let userData=null;
+            if (window.localStorage.getItem("isAuth")) {
+                const id=  auth.currentUser.uid
+                const userDataRef = doc(db, "users", id)
+                const userSnap = await getDoc(userDataRef)
+                userData=userSnap.data()
+                // console.log(userData)
+            }
+
+            dispatch(getPostSucccess({ 
+                docs: data.docs, 
+                isEmpty: data.empty, 
+                size: data.size ,
+                userData
+            }))
+            
         } catch (error) {
             console.log(error)
-            dispatch(getPostFailed())
+            dispatch(getPostFailed(error.message))
         }
     }
 }

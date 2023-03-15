@@ -31,7 +31,8 @@ function CreatePost() {
         postText,
         author: {
           name: currentUser.user.displayName,
-          id: currentUser.user.uid
+          id: currentUser.user.uid,
+          timeStamp : new Date().toUTCString()
         }
       }
     }

@@ -12,8 +12,13 @@ const initialState = {
     postArray: null,
     isEmptyArray: true,
     arraySize: null,
-    isPostsChanged:false,
-    error: null
+    isPostsChanged: false,
+    error: null,
+
+    userLiked: [],
+    likeBit:false,
+    userSaved: [],
+    saveBit:false,
 }
 
 const firestoreReducer = (state = initialState, action) => {
@@ -35,8 +40,11 @@ const firestoreReducer = (state = initialState, action) => {
                 postArray: action.payload.docs,
                 isEmptyArray: action.payload.isEmpty,
                 arraySize: action.payload.size,
-                isPostsChanged:false,
-                loading: false
+                isPostsChanged: false,
+                loading: false,
+
+                userLiked: action.payload.userData.likedPosts && action.payload.userData.likedPosts,
+                userSaved: action.payload.userData.savedPosts && action.payload.userData.savedPosts
             }
 
         case GET_POST_FAILED:
@@ -44,8 +52,8 @@ const firestoreReducer = (state = initialState, action) => {
 
             return {
                 ...state,
+                error: action.payload,
                 loading: false,
-                error: null
             }
 
 
@@ -62,6 +70,7 @@ const firestoreReducer = (state = initialState, action) => {
             console.log("SAVE_POST_SUCCESS called")
             return {
                 ...state,
+                saveBit:!state.saveBit,
                 loading: false
             }
 
@@ -78,14 +87,16 @@ const firestoreReducer = (state = initialState, action) => {
             console.log("LIKE_POST_START called")
             return {
                 ...state,
-                loading: true
+                loading: true,
             }
 
         case LIKE_POST_SUCCESS:
             console.log("LIKE_POST_SUCCESS called")
             return {
                 ...state,
+                likeBit:!state.likeBit,
                 loading: false
+
             }
 
         case LIKE_POST_FAILED:
@@ -109,7 +120,7 @@ const firestoreReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                isPostsChanged:true
+                isPostsChanged: true
             }
 
         case ADD_POST_FAILED:
