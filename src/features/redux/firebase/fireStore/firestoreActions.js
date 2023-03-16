@@ -3,12 +3,14 @@ import {
     SAVE_POST_FAILED, SAVE_POST_SUCCESS, SAVE_POST_START,
     LIKE_POST_START, LIKE_POST_SUCCESS, LIKE_POST_FAILED,
     ADD_POST_START, ADD_POST_SUCCESS, ADD_POST_FAILED,
-    DELETE_POST_START, DELETE_POST_SUCCESS, DELETE_POST_FAILED
+    DELETE_POST_START, DELETE_POST_SUCCESS, DELETE_POST_FAILED,
+    REMOVE_LIKED_POST_FAILED, REMOVE_LIKED_POST_START, REMOVE_LIKED_POST_SUCCESS,
+    REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED
 } from "../../constants";
 import { auth, db } from "../../../../firebase-config";
-import { async } from "@firebase/util";
-import { collection, getDocs, doc, updateDoc, arrayUnion, addDoc, deleteDoc, getDoc } from "firebase/firestore";
-import { MdNoSim } from "react-icons/md";
+import { collection, getDocs, doc, updateDoc, arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove } from "firebase/firestore";
+import { confirmPasswordReset } from "firebase/auth";
+import { Action } from "@remix-run/router";
 
 // * get post
 const getPostStart = () => {
@@ -26,10 +28,11 @@ const getPostSucccess = (data) => {
     }
 }
 
-const getPostFailed = () => {
+const getPostFailed = (err) => {
     console.log("getPostFailed called")
     return {
-        type: GET_POST_FAILED
+        type: GET_POST_FAILED,
+        payload: err
     }
 }
 
@@ -120,6 +123,46 @@ const deletePostFailed = () => {
     }
 }
 
+//  * remove likded post
+const removeLikdePostStart = () => {
+    console.log("removeLikdePostStart called")
+    return {
+        type: REMOVE_LIKED_POST_START
+    }
+}
+const removeLikdePostSuccess = () => {
+    console.log("removeLikdePostSuccess called")
+    return {
+        type: REMOVE_LIKED_POST_SUCCESS
+    }
+}
+const removeLikdePostFailed = (error) => {
+    console.log("removeLikdePostFailed called")
+    return {
+        type: REMOVE_LIKED_POST_FAILED,
+        payload: error
+    }
+}
+
+// * remove saved post
+export const removeSavedPostStart = () => {
+    return {
+        type: REMOVE_SAVED_POST_START,
+    }
+}
+
+export const removeSavedPostSuccess = () => {
+    return {
+        type: REMOVE_SAVED_POST_SUCCESS,
+    }
+}
+
+export const removeSavedPostFailed = (error) => {
+    return {
+        type: REMOVE_SAVED_POST_FAILED,
+        payload:error
+    }
+}
 
 // *get post async 
 export const getPost = () => {
@@ -134,22 +177,22 @@ export const getPost = () => {
             console.log(data)
 
             // console.log("userData")
-            let userData=null;
+            let userData = null;
             if (window.localStorage.getItem("isAuth")) {
-                const id=  auth.currentUser.uid
+                const id = auth.currentUser.uid
                 const userDataRef = doc(db, "users", id)
                 const userSnap = await getDoc(userDataRef)
-                userData=userSnap.data()
+                userData = userSnap.data()
                 // console.log(userData)
             }
 
-            dispatch(getPostSucccess({ 
-                docs: data.docs, 
-                isEmpty: data.empty, 
-                size: data.size ,
+            dispatch(getPostSucccess({
+                docs: data.docs,
+                isEmpty: data.empty,
+                size: data.size,
                 userData
             }))
-            
+
         } catch (error) {
             console.log(error)
             dispatch(getPostFailed(error.message))
@@ -227,7 +270,6 @@ export const likePost = (id) => {
 }
 
 
-
 // *add post async 
 export const addPost = (data) => {
 
@@ -267,6 +309,43 @@ export const deletePost = (id) => {
         } catch (error) {
             console.log(error)
             dispatch(deletePostFailed())
+        }
+    }
+}
+
+
+export const removeLiked = (id) => {
+    return async function (dispatch) {
+        console.log("remove liked called")
+        console.log(id)
+        dispatch(removeLikdePostStart())
+        try {
+            const userActionRef = doc(db, 'users', auth.currentUser.uid)
+            await updateDoc(userActionRef, {
+                likedPosts: arrayRemove(id)
+            })
+            dispatch(removeLikdePostSuccess())
+        } catch (error) {
+            console.log(error)
+            dispatch(removeLikdePostFailed(error))
+        }
+    }
+}
+
+
+export const removeSaved = (id) => {
+    return async function (dispatch) {
+        console.log("removeSavedPost called")
+        dispatch(removeSavedPostStart())
+        try {
+            const userActionRef = doc(db, 'users', auth.currentUser.uid)
+            await updateDoc(userActionRef, {
+                savedPosts: arrayRemove(id)
+            })
+            dispatch(removeSavedPostSuccess())
+        } catch (error) {
+            console.log(error)
+            dispatch(removeSavedPostFailed(error))
         }
     }
 }

@@ -3,7 +3,10 @@ import {
     SAVE_POST_START, SAVE_POST_SUCCESS, SAVE_POST_FAILED,
     LIKE_POST_START, LIKE_POST_FAILED, LIKE_POST_SUCCESS,
     ADD_POST_START, ADD_POST_SUCCESS, ADD_POST_FAILED,
-    DELETE_POST_FAILED, DELETE_POST_SUCCESS, DELETE_POST_START
+    DELETE_POST_FAILED, DELETE_POST_SUCCESS, DELETE_POST_START,
+    REMOVE_LIKED_POST_FAILED, REMOVE_LIKED_POST_SUCCESS, REMOVE_LIKED_POST_START,
+    REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED
+
 } from "../../constants"
 
 const initialState = {
@@ -16,9 +19,9 @@ const initialState = {
     error: null,
 
     userLiked: [],
-    likeBit:false,
+    likeBit: false,
     userSaved: [],
-    saveBit:false,
+    saveBit: false,
 }
 
 const firestoreReducer = (state = initialState, action) => {
@@ -70,7 +73,7 @@ const firestoreReducer = (state = initialState, action) => {
             console.log("SAVE_POST_SUCCESS called")
             return {
                 ...state,
-                saveBit:!state.saveBit,
+                saveBit: !state.saveBit,
                 loading: false
             }
 
@@ -94,7 +97,7 @@ const firestoreReducer = (state = initialState, action) => {
             console.log("LIKE_POST_SUCCESS called")
             return {
                 ...state,
-                likeBit:!state.likeBit,
+                likeBit: !state.likeBit,
                 loading: false
 
             }
@@ -150,6 +153,50 @@ const firestoreReducer = (state = initialState, action) => {
                 ...state,
                 loading: false
             }
+
+        // * remove liked post cases 
+        case REMOVE_LIKED_POST_START:
+            console.log("REMOVE_LIKED_POST_START called")
+            return {
+                ...state,
+                loading: true
+            }
+
+        case REMOVE_LIKED_POST_SUCCESS:
+            console.log("REMOVE_LIKED_POST_SUCCESS called")
+            return {
+                ...state,
+                loading: false
+            }
+        case REMOVE_LIKED_POST_FAILED:
+            console.log("REMOVE_LIKED_POST_FAILED called")
+            return {
+                ...state,
+                loading: false
+            }
+
+        // * remove saved cases 
+        case REMOVE_SAVED_POST_START:
+            console.log("REMOVE_SAVED_POST_START called")
+            return {
+                ...state,
+                loading: true
+            }
+
+        case REMOVE_SAVED_POST_SUCCESS:
+            console.log("REMOVE_SAVED_POST_SUCCESS called")
+            return {
+                ...state,
+                loading: false
+            }
+        case REMOVE_SAVED_POST_FAILED:
+            console.log("REMOVE_SAVED_POST_FAILED called")
+            return {
+                ...state,
+                loading: false
+            }
+
+            
         // *default
         default:
             return state

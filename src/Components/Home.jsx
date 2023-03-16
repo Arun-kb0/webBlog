@@ -7,7 +7,7 @@ import { MdOutlineFavorite } from 'react-icons/md'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import { getPost, savePost, likePost, deletePost } from '../features/redux/firebase/fireStore/firestoreActions'
+import { getPost, savePost, likePost, deletePost, removeLiked, removeSaved } from '../features/redux/firebase/fireStore/firestoreActions'
 
 function Home() {
   const [postLists, setPostLists] = useState([])
@@ -26,12 +26,9 @@ function Home() {
 
   const navigate = useNavigate()
 
-  // ! need to fix reloading **********
   useEffect(() => {
-    console.log("home useEffect called ")
     dispatch(getPost())
-    console.log("userLiked  & saved state updated")
-    // currentUser && console.log(currentUser.user.uid)
+    console.log("post fetched ")
 
     isEmptyArray == false && setPostLists((prev) =>
       postArray.map((doc) => {
@@ -49,19 +46,41 @@ function Home() {
     dispatch(getPost)
     setChangeBit(!changeBit)
     console.log("post deleted")
+    
   }
 
   // *  save post
   const handleSavePost = (id) => {
-    console.log(id)
-    isAuth ? dispatch(savePost(id)) : navigate('/login')
+    const isSaved = Boolean(userSaved.find(pid => (
+      id === pid
+    )))
+    if (isAuth) {
+      isSaved ? dispatch(removeSaved(id))
+        : dispatch(savePost(id))
+      console.log("saved post removed")
+    } else
+      navigate('/login')
+
     setChangeBit(!changeBit)
+    console.log("post saved")
   }
 
   // * like post
   const handleLiked = (id) => {
-    isAuth ? dispatch(likePost(id)) : navigate('/login')
+    const isLiked = Boolean(userLiked.find(pid => (
+      id === pid
+    )))
+
+    console.warn("isLiked " + isLiked)
+    if (isAuth) {
+      isLiked ? dispatch(removeLiked(id))
+        : dispatch(likePost(id))
+      console.log("likeed post removed")
+    } else
+      navigate('/login')
+
     setChangeBit(!changeBit)
+    console.log("post liked")
   }
 
 
