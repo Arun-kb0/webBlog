@@ -7,6 +7,9 @@ import LoginPage from './Pages/LoginPage'
 import Navbar from './Components/Navbar'
 import { useSelector } from 'react-redux'
 import SignUpPage from './Pages/SignUpPage'
+import SideBar from './Components/SideBar'
+import Navigation from './Pages/Navigation'
+import ProfilePage from './Pages/ProfilePage'
 
 function App() {
   // need replace with redux
@@ -15,12 +18,13 @@ function App() {
   // })
   return (
     <BrowserRouter>
-      <Navbar />
+      <Navigation/>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/createpost" element={<CreatePostPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signUp" element={<SignUpPage/>} />
+        <Route path="/profile" element={<ProfilePage/>} />
       </Routes>
     </BrowserRouter>
   )

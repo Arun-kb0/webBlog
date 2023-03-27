@@ -138,8 +138,7 @@ export const userLogout = ()=>{
         dispatch(logoutStart())
         try{
             await signOut(auth)
-            localStorage.clear()
-            
+            localStorage.removeItem("isAuth")
             dispatch(logoutSuccess())
         }catch(error){
             console.log(error)

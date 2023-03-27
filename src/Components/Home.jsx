@@ -11,7 +11,6 @@ import { getPost, savePost, likePost, deletePost, removeLiked, removeSaved } fro
 
 function Home() {
   const [postLists, setPostLists] = useState([])
-  const [isDone, setIsDone] = useState(false)
   let [changeBit, setChangeBit] = useState(false)
 
   const dispatch = useDispatch()
@@ -86,15 +85,14 @@ function Home() {
 
   return (
 
-    <section className='block justify-center items-center mt-10' >
+    <section className='home' >
       {
         postLists &&
         postLists.map((post) => {
 
-          return <div id="postContainer" key={post.postId}
-            className='lg:ml-60 lg:mr-60 m-20 rounded-lg shadow-xl p-5 relative z-10 '>
+          return <div id="postContainer" key={post.postId}>
 
-            <div id="postHeader" className='text-xl uppercase text-center font-semibold mb-4 '>
+            <div id="postHeader" className=''>
               <div className='flex justify-end'>
                 <div className='mr-5'>
                   {
@@ -111,9 +109,8 @@ function Home() {
                   {/* * save btn */}
                   <button onClick={() => { handleSavePost(post.postId) }}>
                     {
-                      //  isAuth && Boolean(saved.find(id => id===post.postId))  
                       isAuth && Boolean(userSaved.find(id => id === post.postId))
-                        ? <BsBookmarkCheckFill id="topRowIcons" className='fill-slate-600' />
+                        ? <BsBookmarkCheckFill id="topRowIcons" className='fill-slate-600 dark:fill-slate-200' />
                         : <BsBookmarkPlus id="topRowIcons" className='' />
 
                     }
@@ -126,7 +123,7 @@ function Home() {
                 <h1 className='postTitle'>{post.title}</h1>
               </div>
             </div>
-            <div id="postTextContainer" className='text-zinc-500 '>
+            <div id="postTextContainer" className=' '>
               {post.postText}
             </div>
             <h3 className='mt-5 text-zinc-400'>@{post.author.name}</h3>

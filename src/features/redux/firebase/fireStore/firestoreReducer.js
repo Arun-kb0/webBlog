@@ -45,9 +45,8 @@ const firestoreReducer = (state = initialState, action) => {
                 arraySize: action.payload.size,
                 isPostsChanged: false,
                 loading: false,
-
-                userLiked: action.payload.userData.likedPosts && action.payload.userData.likedPosts,
-                userSaved: action.payload.userData.savedPosts && action.payload.userData.savedPosts
+                userLiked: action.payload.userData?.likedPosts,
+                userSaved: action.payload.userData?.savedPosts
             }
 
         case GET_POST_FAILED:

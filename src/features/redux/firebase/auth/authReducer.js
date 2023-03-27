@@ -75,9 +75,9 @@ const authReducer = (state = initialState, action) => {
             console.log("LOGOUT_SUCCESS is called")
             return {
                 ...state,
-                loading: false,
+                currentUser:null,
                 isAuth: false,
-                currentUser:null
+                loading: false,
             }
         case LOGOUT_FAILED:
             console.log("LOGOUT_FAILED is called")

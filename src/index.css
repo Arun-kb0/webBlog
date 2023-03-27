@@ -12,90 +12,434 @@
 
   }
 
-.navlink{
-    @apply p-2 text-lg m-2 text-white hover:text-zinc-300
-    text-zinc-400
- 
+  body{
+    @apply top-0 mt-0 p-0 
+  }
+
+ /* * ++++++++++++  btn ++++++++++++++++ */
+
+  
+  .light-btn{
+    @apply mt-2 py-2 px-5 justify-center 
+    rounded-lg shadow-lg
+    text-sm text-gray-900 font-bold
+    hover:drop-shadow-lg hover:text-gray-900 
+    bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600
+    hover:bg-gradient-to-l from-gray-600 via-gray-400 to-gray-200
+    active:scale-75
+    transition-all duration-300
+  }
+
+ .btn{
+    @apply mt-2 py-2 px-5 justify-center 
+    rounded-lg shadow-lg
+    text-sm text-white font-bold
+    hover:drop-shadow-lg hover:text-gray-200 
+    bg-gradient-to-r from-gray-700 via-gray-900 to-black
+    hover:bg-gradient-to-l from-gray-700 via-gray-900 to-black
+    active:scale-75
+    transition-all duration-300
  }
+
+ /* * ++++++++++++  navBar ++++++++++++++++ */
+
+ .top-navigation{
+  @apply fixed top-0 z-50 
+  flex flex-row items-center justify-evenly
+  bg-gray-300/50 backdrop-blur-md dark:bg-gray-800/70 
+  bg-opacity-90 w-full h-16 shadow-lg
+  transition-all duration-300 
+  
+ }
+
+
+ .top-navigation-icon {
+  @apply text-gray-500  
+    mr-3 ml-4 
+    transition duration-300 ease-in-out
+    hover:text-green-600 
+    cursor-pointer
+    xs:ml-2 
+    active:scale-75 
+}
+
+.top-navigation-icon:first{
+  @apply ml-auto mr-4
+}
+
+.title-hashtag{
+  @apply text-lg text-gray-500 tracking-wider
+  font-semibold ml-2 my-auto
+  xs:ml-1
+}
+
+.title-text{
+  @apply text-gray-500 tracking-wider font-semibold 
+  text-opacity-80 mr-auto ml-20 my-auto
+  transition duration-300 ease-in-out
+  xs:ml-1 xs:text-base md:text-xl sm:text-xl
+}
+
+.search{
+  @apply w-1/5 flex items-center justify-start 
+  bg-transparent outline-none 
+  bg-gray-300 dark:bg-gray-600
+  text-gray-500
+  pl-1 rounded-lg
+  hover:text-green-600
+  md:w-1/5 sm:w-2/5 xs:w-3/5 
+  
+}
+
+.search-input{
+  @apply w-full font-semibold 
+  outline-none bg-gray-300 dark:bg-gray-600 
+  dark:text-gray-200 text-gray-600 
+  pl-1 rounded mr-3
+}
+
+
+ /* * ++++++++++++  sidebar ++++++++++++++++ */
+ .side-bar-container{
+  @apply absolute
+ }
+
+ .side-bar{
+  @apply fixed left-0 w-16 mt-16 flex flex-col 
+   dark:bg-gray-900 bg-gray-300 text-white shadow-lg
+   rounded-xl z-50 
+ }
+
+ .sidebar-icon {
+  @apply relative flex items-center justify-center z-50 
+        h-12 w-12 mt-2 mb-2 mx-auto  
+      bg-gray-100 dark:bg-gray-800  text-green-500 
+      hover:bg-green-600 hover:text-white
+    dark:hover:bg-green-600 dark:hover:text-white
+      
+        hover:rounded-xl rounded-3xl
+        active:scale-75
+        transition-all duration-300 ease-linear
+        cursor-pointer shadow-lg ;
+  }
+
+  .side-bar-btn{
+    @apply active:scale-75 transition-all duration-300
+  }
+
+  .sidebar-tooltip {
+  @apply absolute w-auto p-2 m-2 min-w-max left-14 rounded-md shadow-md
+      text-white bg-gray-900 
+        text-xs font-bold 
+        transition-all duration-100 scale-0 origin-left;
+  }
+
+  .sidebar-hr{
+  @apply bg-gray-200 dark:bg-gray-800 
+  border border-gray-200 dark:border-gray-800 rounded-full
+  mx-2;
+  }
+
+
 
  /* ++++++++++++  login ++++++++++++++++ */
+  .loginContainer{
+    @apply  min-h-screen
+    bg-gray-100 dark:bg-gray-600
+    transition-all duration-300 
+    xs:py-20  sm:py-36 md:py-36
+  }
 
  .login{
-   @apply flex justify-center items-center  bg-gray-300 rounded-lg  p-12 
-         flex-wrap h-full sm:mt-24
-         xs:mt-10
-
-         
+    @apply w-6/12 mx-auto shadow-2xl overflow-hidden 
+   bg-gray-300 dark:bg-gray-900/50
+    rounded-xl flex-wrap 
+    transition-all duration-300
+    sm:h-4/6  sm:w-3/6
+    lg:h-4/6 lg:w-3/12
+    xs:w-11/12 
  }
+
+ .login-header{
+@apply relative 
+ }
+
+ .login-wave{
+  @apply  object-cover z-0 w-full
+ }
+
+ .login-title{
+   @apply text-3xl flex 
+    font-bold absolute z-10 top-6 
+  dark:text-gray-800 text-gray-300 
+   sm:px-32 md:px-36 
+   xs:px-48 xs:top-10
+ }
+
+ 
+ .login-inner-container{
+  @apply px-8 py-4 z-20
+ }
+
 
  .loginInput{
     @apply border border-gray-900 rounded-lg bg-slate-100 
-             h-8 p-2 min-w-full
-            outline-none   border-transparent  focus:border-transparent focus:ring-0 
-         focus-visible:border-blue-400
+    text-gray-700 text-base
+    h-8 px-2 py-1 min-w-full
+    outline-none  border-transparent  focus:border-transparent focus:ring-0 
+  focus-visible:border-blue-400
  }
 
- .btn{
-    @apply mt-2 p-2 pl-5 pr-5 justify-center bg-gradient-to-r from-gray-700 via-gray-900 to-black
-         rounded-lg text-sm text-white shadow-lg
-        hover:drop-shadow-lg hover:text-gray-200 
-        hover:bg-gradient-to-l from-gray-700 via-gray-900 to-black
+ .login-form-text{
+  @apply  mb-1 text-center 
+  dark:text-gray-200 text-gray-700
+
  }
+
+ .form-error{
+  @apply  flex justify-center text-red-600 -mt-4 mb-1
+ }
+
 
  /* ++++++++++++  signup ++++++++++++++++ */
 
+.signup-container{
+  @apply min-h-screen justify-center flex
+  bg-gray-100 dark:bg-gray-600
+}
+
+.signup-container-inner{
+@apply  flex  h-3/6  py-36  
+sm:w-10/12
+md:w-6/12
+}
+
  .signUp{
-   @apply flex justify-center items-center  bg-gray-300 rounded-lg  p-12 
-         flex-wrap h-full sm:mt-24
-         xs:mt-10
+   @apply px-5 mx-auto items-center py-32
+   flex justify-center 
+   bg-gray-300 dark:bg-gray-900 rounded-xl rounded-l-none
+   transition-all duration-300 
+   md:w-7/12 md:h-5/6 
+   sm:w-7/12 sm:h-5/6
  }
+
  .signUpInput{
    @apply border border-gray-900 rounded-lg bg-slate-100 
-   h-8 p-2 w-40 
-  outline-none   border-transparent  focus:border-transparent focus:ring-0 
-focus-visible:border-blue-400
-    
+   h-8 w-11/12 p-2 
+  outline-none border-transparent focus:border-transparent 
+  focus:ring-0 focus-visible:border-blue-400
    xs:mb-5
-   
  }
+
+
+ .emailSignup{
+  @apply flex flex-col 
+  sm:w-80 
+  /* xs:64  */
+ }
+
+ .signup-left-div{
+  @apply static 
+ }
+
+ .signup-image{
+  @apply  h-full object-cover rounded-xl rounded-r-none
+  
+ }
+
+.signup-title{
+  @apply z-10 -mt-80 
+   text-zinc-600 text-4xl font-semibold
+    md:px-32 sm:px-16
+}
+
 
  /* ++++++++++++  create post ++++++++++++++++ */
+ .createPostContainer{
+  @apply  
+  flex justify-center items-center min-h-screen 
+  bg-gray-100 dark:bg-gray-600 
+  transition-all duration-300 
+  
+ }
+
  .createPost{
-   @apply block bg-gradient-to-r from-slate-500 to-slate-800 rounded-2xl 
-         lg:ml-80 lg:mr-80 lg:mt-14 lg:mt-10 p-8 
-         sm:ml-24 sm:mr-24 sm:mt-10 
+  @apply shadow-2xl mt-10 
+  transition-all duration-300
+   bg-gray-300 dark:bg-gray-900/50 rounded-2xl
+   lg:w-2/5  lg:h-4/5 
+   sm:w-8/12 sm:h-4/5 sm:ml-10
+   xs:w-full xs:bg-gray-200 xs:mt-14
+}
 
+
+ .create-post-header{
+ @apply relative 
  }
+
+ .create-post-wave{
+  @apply  object-cover static rounded-2xl
+ }
+ 
+ .create-post-title {
+  @apply text-3xl py-4 absolute z-10 top-2
+  font-bold px-40 text-gray-300 dark:text-gray-800
+  w-screen 
+  /* md:px-52 xs:pl-44  */
+ }
+
+ .create-post-inputs{
+  @apply px-10
+ }
+
  .createPostInput{
-  @apply  rounded-xl  w-full p-2 pl-4 pr-4 text-lg 
-       outline-none 
-      border-transparent  focus:border-transparent focus:ring-0 
+  @apply  rounded-xl w-full py-2 px-4 text-lg 
+       outline-none border-transparent  
+       focus:border-transparent focus:ring-0 
  }
 
- .CreatePostFeildText{
-   @apply text-2xl flex justify-center text-zinc-400 font-semibold
-
+ .CreatePostFieldText{
+   @apply text-2xl flex justify-center
+    text-zinc-600 dark:text-zinc-400 font-semibold
  }
 
  /* ++++++++++++  Home ++++++++++++++++ */
+
+ 
+.home{
+  @apply bg-gray-100 dark:bg-gray-700 
+  block justify-center items-center 
+  p-1 pl-10 mt-0
+  transition-all duration-300 
+}
+
 #postContainer{
    @apply m-20 rounded-lg shadow-2xl p-5 
+      bg-gray-100 dark:bg-gray-600
+    transition-all duration-300
+
          lg:ml-60 lg:mr-60
          sm:ml-20 sm:mr-20
-         xs:ml-5 xs:mr-5
+         xs:ml-0 xs:mr-7
+}
+#postContainer{
+  @apply text-gray-600 dark:text-gray-100
+  
+}
+#postHeader{
+  @apply text-xl uppercase text-center font-semibold mb-4 
 }
 
 .postTitle{
-  @apply text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-orange-300 to-red-600
+  @apply text-2xl font-extrabold text-transparent
+   bg-clip-text dark:bg-stone-300 bg-stone-600
 }
 
 #topRowIcons{
-  @apply text-zinc-500 hover:text-zinc-900 active:text-red-600
+  @apply text-zinc-500 dark:text-zinc-300 
+    dark:hover:text-zinc-100  hover:text-zinc-900
+    active:text-gray-800 active:scale-75
+    transition-all duration-300
 }
 
 #bottomIcons{
-  @apply  text-zinc-500 text-2xl hover:text-zinc-900 active:text-red-600
+  @apply  text-zinc-500 dark:text-zinc-300 text-2xl
+   hover:text-zinc-900 dark:hover:text-zinc-100
+    active:text-red-600 active:scale-75
+    transition-all duration-300
 }
+
+
+ /* ++++++++++++  Profile ++++++++++++++++ */
+
+.profile-container {
+@apply flex flex-col h-screen w-screen
+bg-gray-100 dark:bg-gray-700
+
+}
+
+.camera-icon{
+  @apply absolute z-10
+   dark:bg-gray-200 bg-gray-900 rounded-full p-2
+   dark:text-gray-900 text-gray-200 
+   hover:bg-green-600 dark:hover:bg-green-600
+   active:scale-75 
+   transition-all duration-300
+
+} 
+
+.profile-header {
+  @apply  flex justify-center 
+   h-2/6 mt-20  relative z-0 w-screen 
+  
+}
+
+.cover-pic-container{
+  @apply flex relative mr-1
+  sm:w-11/12 md:w-8/12 
+  xs:w-full xs:mr-0 xs:-mt-4
+}
+
+.cover-pic {
+  @apply  rounded-xl h-56 w-full
+   object-fill z-0
+
+}
+
+
+.cover-cam-position{
+  @apply top-[12rem]
+  sm:left-[38rem] md:left-[58rem] 
+}
+
+.profile-pic-container {
+  @apply  rounded-full w-40 flex items-center
+   absolute z-10  top-24
+  mb-5 bg-green-600 p-1
+  sm:left-20 md:left-72
+}
+
+.profile-pic {
+  @apply  rounded-full object-cover
+}
+.profile-pic-cam-position{
+  @apply top-28 left-28
+ 
+}
+
+.profile-butons{
+  @apply mt-8 
+  sm:ml-24  md:ml-72 
+}
+
+.profile-btn {
+  @apply  mr-5 flex 
+  
+}
+
+.profile-username{
+  @apply  text-3xl font-bold
+  dark:text-gray-100  text-gray-900
+}
+.user-details-container{
+  
+}
+
+
+.profile-user-details{
+  @apply  mt-10 p-5 rounded-xl shadow-2xl 
+  dark:bg-gray-600 bg-gray-300 
+ text-gray-600 dark:text-gray-100
+ sm:mx-8 md:mx-64
+
+}
+
+.profile-userPosts{
+ @apply flex flex-col p-5 mt-5
+ bg-gray-300 rounded-xl 
+ md:mx-64 sm:mx-8
+}
+
 
 }
 
