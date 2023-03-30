@@ -1,21 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
+
 import { IoTrashBinOutline } from 'react-icons/io5'
 import { BsBookmarkPlus, BsBookmarkCheckFill } from 'react-icons/bs'
-import { IoIosHeartEmpty, IoIosHeart } from 'react-icons/io'
 import { MdOutlineFavorite } from 'react-icons/md'
+import { FaRegComment } from 'react-icons/fa'
+import { RiShareForwardLine } from 'react-icons/ri'
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'
+import { IoClose } from 'react-icons/io5'
+
 
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import { getPost, savePost, likePost, deletePost, removeLiked, removeSaved } from '../features/redux/firebase/fireStore/firestoreActions'
+import {
+  getPost, savePost, likePost, deletePost, removeLiked,
+  removeSaved, commentPost
+} from '../features/redux/firebase/fireStore/firestoreActions'
+
+import CommentBox from './CommentBox'
 
 function Home() {
   const [postLists, setPostLists] = useState([])
-  let [changeBit, setChangeBit] = useState(false)
+  const [OpenCommentBox, setOpenCommentBox] = useState(false)
+  const [commentPostId, setCommentPostId] = useState(null)
+  const [addedComments, setAddedComments] = useState(null)
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const { postArray, isEmptyArray, arraySize, isPostsChanged,
-    userLiked, userSaved, saveBit, likeBit } = useSelector((store) => {
+    userLiked, userSaved, saveBit, likeBit, loading } = useSelector((store) => {
       return store.firestoreDB
     })
 
@@ -23,65 +37,36 @@ function Home() {
     return store.user
   })
 
-  const navigate = useNavigate()
+
+
 
   useEffect(() => {
-    dispatch(getPost())
-    console.log("post fetched ")
-
-    isEmptyArray == false && setPostLists((prev) =>
-      postArray.map((doc) => {
-        // console.log(doc.data())
-        return { ...doc.data(), postId: doc.id }
-      })
-    )
-
-  }, [arraySize, changeBit])
-
-
-  // * delete post
-  const handldeDeletePost = (id) => {
-    dispatch(deletePost(id))
-    dispatch(getPost)
-    setChangeBit(!changeBit)
-    console.log("post deleted")
+    console.count("home useEffect ")
+    let isCancelled = false
     
+    dispatch(getPost())
+    !isEmptyArray && !isCancelled
+      setPostLists((prev) =>
+        postArray?.map((doc) => {
+          return { ...doc.data(), postId: doc.id }
+        })
+      )
+
+      return()=>{
+        isCancelled=true
+      }
+
+    // console.log("isPostsChanged " + isPostsChanged)
+    // console.log("arraySize " + arraySize)
+  }, [arraySize, likeBit, saveBit, isPostsChanged])
+
+
+  const handleCommentBox = (id, comments) => {
+    setOpenCommentBox(!OpenCommentBox)
+    setCommentPostId(id)
+    setAddedComments(comments)
+    // console.log(addedComments)
   }
-
-  // *  save post
-  const handleSavePost = (id) => {
-    const isSaved = Boolean(userSaved.find(pid => (
-      id === pid
-    )))
-    if (isAuth) {
-      isSaved ? dispatch(removeSaved(id))
-        : dispatch(savePost(id))
-      console.log("saved post removed")
-    } else
-      navigate('/login')
-
-    setChangeBit(!changeBit)
-    console.log("post saved")
-  }
-
-  // * like post
-  const handleLiked = (id) => {
-    const isLiked = Boolean(userLiked.find(pid => (
-      id === pid
-    )))
-
-    console.warn("isLiked " + isLiked)
-    if (isAuth) {
-      isLiked ? dispatch(removeLiked(id))
-        : dispatch(likePost(id))
-      console.log("likeed post removed")
-    } else
-      navigate('/login')
-
-    setChangeBit(!changeBit)
-    console.log("post liked")
-  }
-
 
   return (
 
@@ -94,28 +79,14 @@ function Home() {
 
             <div id="postHeader" className=''>
               <div className='flex justify-end'>
-                <div className='mr-5'>
-                  {
-                    isAuth && post.author.id === currentUser.user.uid &&
-                    <button onClick={() => {
-                      handldeDeletePost(post.postId)
-                    }}>
-                      <IoTrashBinOutline id="topRowIcons" />
-                    </button>
-                  }
-                </div>
 
-                <div >
-                  {/* * save btn */}
-                  <button onClick={() => { handleSavePost(post.postId) }}>
-                    {
-                      isAuth && Boolean(userSaved.find(id => id === post.postId))
-                        ? <BsBookmarkCheckFill id="topRowIcons" className='fill-slate-600 dark:fill-slate-200' />
-                        : <BsBookmarkPlus id="topRowIcons" className='' />
+                {
+                  isAuth && post.author.id === currentUser.user.uid &&
+                  <Delete isAuth={isAuth} postId={post.postId} />
+                }
 
-                    }
-                  </button>
-                </div>
+                <Save isAuth={isAuth} postId={post.postId}
+                  userSaved={userSaved} />
 
               </div>
 
@@ -128,22 +99,28 @@ function Home() {
             </div>
             <h3 className='mt-5 text-zinc-400'>@{post.author.name}</h3>
 
-            <div className='mt-2'>
+            {/* bottom row btns */}
+            <div className='bottom-btns-container mt-3 flex flex-row'>
+              <Like isAuth={isAuth} postId={post.postId}
+                user={currentUser?.user}
+                userLiked={post.liked} loading={loading}
+                likeBit={likeBit} />
 
-              {/* like btn */}
-              <div>
-                <button className=''
-                  onClick={() => { handleLiked(post.postId) }}>
-                  {
-                    // isAuth && Boolean(liked.find(id => id === post.postId)) 
-                    isAuth && Boolean(userLiked.find(id => id === post.postId))
-                      ? <IoIosHeart id="bottomIcons" className='fill-red-600' />
-                      : <IoIosHeartEmpty id="bottomIcons" className='focus:bg-red-600' />
-                  }
-                </button>
-              </div>
-
+              <button onClick={() => handleCommentBox(post.postId, post.comments)}
+                className='ml-3'>
+                <CommentBtn />
+              </button>
+              <Share />
             </div>
+
+            {
+              OpenCommentBox && commentPostId === post.postId &&
+              <CommentBox isAuth={isAuth} postId={commentPostId}
+                user={currentUser?.user}
+                comments={addedComments} isPostsChanged={isPostsChanged}
+              />
+            }
+
           </div>
         })
       }
@@ -151,6 +128,107 @@ function Home() {
     </section>
   )
 }
+
+// * like 
+const Like = (props) => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [isLiked, setisLiked] = useState(false)
+  const [LikeCount, setLikeCount] = useState(props.userLiked.length)
+
+  const handleLiked = (id) => {
+    console.log("handleLiked")
+    props.isAuth && setisLiked(Boolean(
+      props.userLiked?.find(uid => uid == props.user?.uid
+      )))
+    if (props.isAuth) {
+      if (isLiked) {
+        dispatch(removeLiked(id))
+        setLikeCount(prev => prev - 1)
+      } else {
+        dispatch(likePost(id))
+        setLikeCount(prev => prev + 1)
+      }
+      console.log(isLiked)
+      setisLiked(!isLiked)
+
+    } else
+      navigate('/login')
+    console.log("post liked")
+    console.count(props.userLiked)
+  }
+
+  return <button onClick={() => { handleLiked(props.postId) }}
+    className='flex flex-row'>
+    <span className='pr-1'>{LikeCount}</span>
+    {
+      props.isAuth && isLiked
+        ? <AiFillHeart id="bottomIcons" className='fill-red-600' />
+        : <AiOutlineHeart id="bottomIcons" className='focus:bg-red-600' />
+    }
+  </button>
+}
+
+// * save
+const Save = (props) => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [isSaved, setIsSaved] = useState(false)
+
+  useEffect(() => {
+    setIsSaved(Boolean(
+      props.userSaved?.find(pid => props.postId === pid
+      )))
+  })
+
+  const handleSavePost = () => {
+    if (props.isAuth) {
+      isSaved ? dispatch(removeSaved(props.postId))
+        : dispatch(savePost(props.postId))
+      setIsSaved(!isSaved)
+      console.log("saved post removed")
+    } else
+      navigate('/login')
+    console.log("post saved")
+  }
+
+  return <button onClick={handleSavePost}>
+    {
+      props.isAuth && isSaved
+        ? <BsBookmarkCheckFill id="topRowIcons" className='fill-slate-600 dark:fill-slate-200' />
+        : <BsBookmarkPlus id="topRowIcons" className='' />
+
+    }
+  </button>
+}
+
+const Delete = (props) => {
+  const dispatch = useDispatch()
+  const handldeDeletePost = () => {
+    dispatch(deletePost(props.postId))
+    dispatch(getPost)
+    console.log("post deleted")
+  }
+
+  return <button onClick={handldeDeletePost}
+    className='mr-3'>
+    <IoTrashBinOutline id="topRowIcons" />
+  </button>
+}
+
+// * comment 
+const CommentBtn = () => <FaRegComment size='22' id='bottomIcons' />
+
+// * share
+const Share = () => {
+  const handelShare = () => {
+    console.log("shared")
+  }
+  return <button onClick={handelShare} className='pl-3 '>
+    <RiShareForwardLine size='24' id='bottomIcons' />
+  </button>
+}
+
 
 
 export default Home

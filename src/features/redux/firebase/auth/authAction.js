@@ -86,7 +86,7 @@ const logoutFalied=(error)=>{
 export const registerInitiate = (Email, Password, displayName) => {
     return async function (dispatch) {
 
-        console.log("registerInitiate called ")
+        // console.log("registerInitiate called ")
         dispatch(registerStart())
         try {
             const res = await createUserWithEmailAndPassword(auth, Email, Password)
@@ -98,7 +98,6 @@ export const registerInitiate = (Email, Password, displayName) => {
             await setDoc(userCollectionRef, {
                 name: displayName,
                 userId: auth.currentUser.uid,
-                likedPosts: [],
                 savedPosts: []
             })
 
@@ -114,7 +113,7 @@ export const registerInitiate = (Email, Password, displayName) => {
 // * login user
 export const userLogin =(data)=>{
     return async function (dispatch){
-        console.log("userLogin called ")
+        // console.log("userLogin called ")
         console.log(data)
         dispatch(loginStart())
         try{
@@ -133,7 +132,7 @@ export const userLogin =(data)=>{
 
 // * logout user
 export const userLogout = ()=>{
-    console.log("userLogout called")
+    // console.log("userLogout called")
     return async function (dispatch){
         dispatch(logoutStart())
         try{

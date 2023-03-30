@@ -30,7 +30,9 @@ function CreatePost() {
           name: currentUser.user.displayName,
           id: currentUser.user.uid,
           timeStamp: new Date().toUTCString()
-        }
+        },
+        comments:[],
+        liked:[]
       }
     }
     dispatch(addPost(data))

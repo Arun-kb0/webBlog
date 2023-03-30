@@ -81,7 +81,7 @@ const LogoutIcon = () => {
 const LoginIcon = () => <BiLogIn size='24' className='top-navigation-icon ' />
 const HashtagIcon = () => <FaHashtag size='24' className='top-navigation-icon' />
 const Title = () => <h5 className='title-text'>Dev Bloger</h5>
-const HambergerMenu = () => <HiMenuAlt1 className='top-navigation-icon' size='28' />
-const CloseHamMenu = () => <IoClose className='top-navigation-icon' size='28' />
+const HambergerMenu = () => <HiMenuAlt1 className='top-navigation-icon ml-4' size='28' />
+const CloseHamMenu = () => <IoClose className='top-navigation-icon ml-4' size='28' />
 
 export default Navbar

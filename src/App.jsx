@@ -1,31 +1,33 @@
 import './App.css'
-import React, { useState } from 'react'
+import React, { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import HomePage from './Pages/HomePage'
-import CreatePostPage from './Pages/CreatePostPage'
-import LoginPage from './Pages/LoginPage'
-import Navbar from './Components/Navbar'
-import { useSelector } from 'react-redux'
-import SignUpPage from './Pages/SignUpPage'
-import SideBar from './Components/SideBar'
+// import HomePage from './Pages/HomePage'
+// import CreatePostPage from './Pages/CreatePostPage'
+// import LoginPage from './Pages/LoginPage'
+// import SignUpPage from './Pages/SignUpPage'
+// import ProfilePage from './Pages/ProfilePage'
 import Navigation from './Pages/Navigation'
-import ProfilePage from './Pages/ProfilePage'
+
+const HomePage = lazy(() => import("./Pages/HomePage"))
+const CreatePostPage = lazy(() => import("./Pages/CreatePostPage"))
+const LoginPage = lazy(() => import("./Pages/LoginPage"))
+const SignUpPage = lazy(() => import('./Pages/SignUpPage'))
+const ProfilePage = lazy(() => import('./Pages/ProfilePage'))
 
 function App() {
-  // need replace with redux
-  // const {isAuth} = useSelector((state)=>{
-  //  return  state.login
-  // })
+
   return (
     <BrowserRouter>
-      <Navigation/>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/createpost" element={<CreatePostPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signUp" element={<SignUpPage/>} />
-        <Route path="/profile" element={<ProfilePage/>} />
-      </Routes>
+      <Navigation />
+      <Suspense fallback={<h1>loading...</h1>}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/createpost" element={<CreatePostPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signUp" element={<SignUpPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }

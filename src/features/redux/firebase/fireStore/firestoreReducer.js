@@ -1,3 +1,4 @@
+import { connect } from "react-redux"
 import {
     GET_POST_START, GET_POST_SUCCESS, GET_POST_FAILED,
     SAVE_POST_START, SAVE_POST_SUCCESS, SAVE_POST_FAILED,
@@ -5,12 +6,12 @@ import {
     ADD_POST_START, ADD_POST_SUCCESS, ADD_POST_FAILED,
     DELETE_POST_FAILED, DELETE_POST_SUCCESS, DELETE_POST_START,
     REMOVE_LIKED_POST_FAILED, REMOVE_LIKED_POST_SUCCESS, REMOVE_LIKED_POST_START,
-    REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED
+    REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED, COMMENT_POST_START, COMMENT_POST_SUCCESS, COMMENT_POST_FAILED
 
 } from "../../constants"
 
 const initialState = {
-    loading: false,
+    loading: null,
     currentUSer: null,
     postArray: null,
     isEmptyArray: true,
@@ -22,6 +23,7 @@ const initialState = {
     likeBit: false,
     userSaved: [],
     saveBit: false,
+
 }
 
 const firestoreReducer = (state = initialState, action) => {
@@ -37,16 +39,19 @@ const firestoreReducer = (state = initialState, action) => {
 
         case GET_POST_SUCCESS:
             console.log("GET_POST_SUCCESS called")
-            // console.log(action.payload)
+            console.log(action.payload.docs)
             return {
                 ...state,
                 postArray: action.payload.docs,
                 isEmptyArray: action.payload.isEmpty,
                 arraySize: action.payload.size,
-                isPostsChanged: false,
+                // isPostsChanged: !state.isPostsChanged,
                 loading: false,
-                userLiked: action.payload.userData?.likedPosts,
+                userLiked:action.payload.liked,
+                
                 userSaved: action.payload.userData?.savedPosts
+
+
             }
 
         case GET_POST_FAILED:
@@ -122,7 +127,7 @@ const firestoreReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                isPostsChanged: true
+                isPostsChanged: !state.isPostsChanged
             }
 
         case ADD_POST_FAILED:
@@ -144,6 +149,7 @@ const firestoreReducer = (state = initialState, action) => {
             console.log("DELETE_POST_SUCCESS called")
             return {
                 ...state,
+                isPostsChanged: !state.isPostsChanged,
                 loading: false
             }
         case DELETE_POST_FAILED:
@@ -165,6 +171,7 @@ const firestoreReducer = (state = initialState, action) => {
             console.log("REMOVE_LIKED_POST_SUCCESS called")
             return {
                 ...state,
+                likeBit: !state.likeBit,
                 loading: false
             }
         case REMOVE_LIKED_POST_FAILED:
@@ -186,6 +193,7 @@ const firestoreReducer = (state = initialState, action) => {
             console.log("REMOVE_SAVED_POST_SUCCESS called")
             return {
                 ...state,
+                saveBit: !state.saveBit,
                 loading: false
             }
         case REMOVE_SAVED_POST_FAILED:
@@ -195,7 +203,29 @@ const firestoreReducer = (state = initialState, action) => {
                 loading: false
             }
 
-            
+        case COMMENT_POST_START:
+            console.log('COMMENT_POST_START')
+            return {
+                ...state,
+                loading: true,
+            }
+
+        case COMMENT_POST_SUCCESS:
+            console.log('COMMENT_POST_SUCCESS')
+            return {
+                ...state,
+                loading: false,
+                isPostsChanged :!state.isPostsChanged
+            }
+
+        case COMMENT_POST_FAILED:
+            console.log('COMMENT_POST_FAILED')
+            return {
+                ...state,
+                loading: false,
+                error:action.payload.error
+            }
+
         // *default
         default:
             return state

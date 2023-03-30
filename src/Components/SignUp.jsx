@@ -9,14 +9,15 @@ import space from '../assets/space.png'
 import signupImage from '../assets/signupImage.webp'
 function SignUp() {
 
-  const { register, handleSubmit, formState: { errors } } = useForm()
-
+  
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  
   const { currentUser, isAuth } = useSelector((store) => {
     return store.user
   })
-
+  
+  const { register, handleSubmit, formState: { errors } } = useForm()
 
 
   const onsubmit = (data) => {

@@ -5,12 +5,18 @@ import {
     ADD_POST_START, ADD_POST_SUCCESS, ADD_POST_FAILED,
     DELETE_POST_START, DELETE_POST_SUCCESS, DELETE_POST_FAILED,
     REMOVE_LIKED_POST_FAILED, REMOVE_LIKED_POST_START, REMOVE_LIKED_POST_SUCCESS,
-    REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED
+    REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED,
+    COMMENT_POST_START, COMMENT_POST_SUCCESS, COMMENT_POST_FAILED
 } from "../../constants";
 import { auth, db } from "../../../../firebase-config";
-import { collection, getDocs, doc, updateDoc, arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove } from "firebase/firestore";
+import {
+    collection, getDocs, doc, updateDoc,
+    arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove
+} from "firebase/firestore";
 import { confirmPasswordReset } from "firebase/auth";
 import { Action } from "@remix-run/router";
+import { async } from "@firebase/util";
+
 
 // * get post
 const getPostStart = () => {
@@ -160,23 +166,51 @@ export const removeSavedPostSuccess = () => {
 export const removeSavedPostFailed = (error) => {
     return {
         type: REMOVE_SAVED_POST_FAILED,
-        payload:error
+        payload: error
     }
 }
+
+export const commentPostStart = () => {
+    return {
+        type: COMMENT_POST_START,
+    }
+}
+
+
+export const commentPostSuccess = () => {
+    return {
+        type: COMMENT_POST_SUCCESS,
+    }
+}
+
+
+export const commentPostFailed = (error) => {
+    return {
+        type: COMMENT_POST_FAILED,
+        payload: error
+    }
+}
+
+
 
 // *get post async 
 export const getPost = () => {
 
     return async function (dispatch) {
-        console.log("getPost is called")
+        // console.log("getPost is called")
         dispatch(getPostStart())
 
         try {
             const postCollectionRef = collection(db, "posts")
             const data = await getDocs(postCollectionRef)
-            console.log(data)
+           
+            const liked =data.docs.map(doc=>{
+                // console.log(doc.data().liked )
+                return(doc.data().liked)
+            } )
+            console.warn(liked)
 
-            // console.log("userData")
+            // * calling users firestore
             let userData = null;
             if (window.localStorage.getItem("isAuth")) {
                 const id = auth.currentUser.uid
@@ -190,7 +224,8 @@ export const getPost = () => {
                 docs: data.docs,
                 isEmpty: data.empty,
                 size: data.size,
-                userData
+                userData,
+                liked
             }))
 
         } catch (error) {
@@ -205,7 +240,7 @@ export const getPost = () => {
 export const savePost = (id) => {
 
     return async function (dispatch) {
-        console.log("setSavedPost");
+        // console.log("setSavedPost");
         // console.log(id);
         dispatch(savePostStart())
 
@@ -239,23 +274,15 @@ export const savePost = (id) => {
 export const likePost = (id) => {
 
     return async function (dispatch) {
-        console.log("likePost called")
+        // console.log("likePost called")
         dispatch(likePostStart())
 
         try {
-            const data = {
-                docName: "users",
-                userData: {
-                    userId: auth.currentUser.uid,
-                    likedPosts: [id],
-                    savedPosts: []
-                }
-            }
-
-            const userActionRef = doc(db, data.docName, data.userData.userId)
-            const unionRes = await updateDoc(userActionRef, {
-                likedPosts: arrayUnion(`${data.userData.likedPosts}`)
+            const postRef = doc(db, 'posts', id)
+            const unionRes = await updateDoc(postRef, {
+                liked: arrayUnion(`${auth.currentUser.uid}`)
             })
+
             console.log(unionRes)
             dispatch(likePostSuccess())
 
@@ -274,7 +301,7 @@ export const likePost = (id) => {
 export const addPost = (data) => {
 
     return async function (dispatch) {
-        console.log("addPost")
+        // console.log("addPost")
         console.log(data)
         dispatch(addPostStart())
 
@@ -294,7 +321,7 @@ export const addPost = (data) => {
 // * deletePost async
 export const deletePost = (id) => {
     return async function (dispatch) {
-        console.log("deletePost called")
+        // console.log("deletePost called")
         console.log(id)
 
         try {
@@ -305,7 +332,8 @@ export const deletePost = (id) => {
             }
             const collectionRef = doc(db, data.docName, data.docId)
             await deleteDoc(collectionRef)
-            dispatch(deletePostSuccess)
+            dispatch(deletePostSuccess())
+
         } catch (error) {
             console.log(error)
             dispatch(deletePostFailed())
@@ -313,17 +341,18 @@ export const deletePost = (id) => {
     }
 }
 
-
+// remove liked
 export const removeLiked = (id) => {
     return async function (dispatch) {
-        console.log("remove liked called")
+        // console.log("remove liked called")
         console.log(id)
         dispatch(removeLikdePostStart())
         try {
-            const userActionRef = doc(db, 'users', auth.currentUser.uid)
-            await updateDoc(userActionRef, {
-                likedPosts: arrayRemove(id)
+            const postRef= doc(db,'posts',id)
+            await updateDoc(postRef,{
+                liked: arrayRemove(`${auth.currentUser.uid}`)
             })
+
             dispatch(removeLikdePostSuccess())
         } catch (error) {
             console.log(error)
@@ -332,10 +361,10 @@ export const removeLiked = (id) => {
     }
 }
 
-
+// remove saved
 export const removeSaved = (id) => {
     return async function (dispatch) {
-        console.log("removeSavedPost called")
+        // console.log("removeSavedPost called")
         dispatch(removeSavedPostStart())
         try {
             const userActionRef = doc(db, 'users', auth.currentUser.uid)
@@ -346,6 +375,27 @@ export const removeSaved = (id) => {
         } catch (error) {
             console.log(error)
             dispatch(removeSavedPostFailed(error))
+        }
+    }
+}
+
+// comment post
+export const commentPost = (data) => {
+    return async function (dispatch) {
+        // console.log("comment post called ")
+        dispatch(commentPostStart())
+
+        try {
+            console.log(data)
+            const commentsRef = doc(db, 'posts', data.postId)
+            const unionRes = await updateDoc(commentsRef, {
+                comments: arrayUnion(data.comment)
+            })
+            console.log(unionRes)
+            dispatch(commentPostSuccess())
+        } catch (error) {
+            console.log(error);
+            dispatch(commentPostFailed(error))
         }
     }
 }
