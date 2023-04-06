@@ -1,32 +1,33 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { IoTrashBinOutline } from 'react-icons/io5'
 import { BsBookmarkPlus, BsBookmarkCheckFill } from 'react-icons/bs'
-import { MdOutlineFavorite } from 'react-icons/md'
 import { FaRegComment } from 'react-icons/fa'
 import { RiShareForwardLine } from 'react-icons/ri'
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'
-import { IoClose } from 'react-icons/io5'
-
 
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 import {
   getPost, savePost, likePost, deletePost, removeLiked,
-  removeSaved, commentPost
-} from '../features/redux/firebase/fireStore/firestoreActions'
+  removeSaved,
+} from '../../features/redux/firebase/fireStore/firestoreActions'
 
 import CommentBox from './CommentBox'
+import HomePageLoad from './HomePageLoad'
 
-function Home() {
+function Home(props) {
   const [postLists, setPostLists] = useState([])
   const [OpenCommentBox, setOpenCommentBox] = useState(false)
   const [commentPostId, setCommentPostId] = useState(null)
-  const [addedComments, setAddedComments] = useState(null)
+  const [styles, setStyles] = useState({
+    home: 'home',
+    PostsContainers: 'PostsContainers'
+  })
 
   const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const location = useLocation()
 
   const { postArray, isEmptyArray, arraySize, isPostsChanged,
     userLiked, userSaved, saveBit, likeBit, loading } = useSelector((store) => {
@@ -43,104 +44,138 @@ function Home() {
   useEffect(() => {
     console.count("home useEffect ")
     let isCancelled = false
-    
-    dispatch(getPost())
-    !isEmptyArray && !isCancelled
+
+    if (location.pathname === '/profile') {
+      setPostLists(props.postLists)
+      setStyles({
+        home: 'dark:bg-gray-700  p-0 m-0',
+        PostsContainers: 'm-0 p-0 '
+      })
+      console.log(postLists)
+    } else {
+      dispatch(getPost())
+      !isEmptyArray && !isCancelled
       setPostLists((prev) =>
         postArray?.map((doc) => {
           return { ...doc.data(), postId: doc.id }
         })
       )
+    }
 
-      return()=>{
-        isCancelled=true
-      }
+    return () => {
+      isCancelled = true
+    }
 
     // console.log("isPostsChanged " + isPostsChanged)
     // console.log("arraySize " + arraySize)
-  }, [arraySize, likeBit, saveBit, isPostsChanged])
+  }, [arraySize, likeBit, saveBit, isPostsChanged, props.isProfilePost])
 
 
-  const handleCommentBox = (id, comments) => {
+  const handleCommentBox = (id) => {
     setOpenCommentBox(!OpenCommentBox)
     setCommentPostId(id)
-    setAddedComments(comments)
     // console.log(addedComments)
   }
 
   return (
 
-    <section className='home' >
+
+    <section className={styles.home} >
       {
-        postLists &&
-        postLists.map((post) => {
-
-          return <div id="postContainer" key={post.postId}>
-
-            <div id="postHeader" className=''>
-              <div className='flex justify-end'>
-
-                {
-                  isAuth && post.author.id === currentUser.user.uid &&
-                  <Delete isAuth={isAuth} postId={post.postId} />
-                }
-
-                <Save isAuth={isAuth} postId={post.postId}
-                  userSaved={userSaved} />
-
-              </div>
-
-              <div>
-                <h1 className='postTitle'>{post.title}</h1>
-              </div>
-            </div>
-            <div id="postTextContainer" className=' '>
-              {post.postText}
-            </div>
-            <h3 className='mt-5 text-zinc-400'>@{post.author.name}</h3>
-
-            {/* bottom row btns */}
-            <div className='bottom-btns-container mt-3 flex flex-row'>
-              <Like isAuth={isAuth} postId={post.postId}
-                user={currentUser?.user}
-                userLiked={post.liked} loading={loading}
-                likeBit={likeBit} />
-
-              <button onClick={() => handleCommentBox(post.postId, post.comments)}
-                className='ml-3'>
-                <CommentBtn />
-              </button>
-              <Share />
-            </div>
-
-            {
-              OpenCommentBox && commentPostId === post.postId &&
-              <CommentBox isAuth={isAuth} postId={commentPostId}
-                user={currentUser?.user}
-                comments={addedComments} isPostsChanged={isPostsChanged}
-              />
-            }
-
-          </div>
-        })
+        !postLists && <HomePageLoad />
       }
 
+      <div className={styles.PostsContainers}>
+        {
+          postLists &&
+          postLists.map((post) => {
+
+            return <div id="postContainer" key={post.postId}>
+
+              <div id="postHeader" className=''>
+                <div className='flex justify-end'>
+
+                  {
+                    isAuth && post.author.id === currentUser.user.uid &&
+                    <Delete
+                      isAuth={isAuth}
+                      postId={post.postId}
+                      commentRef={post.commentRef}
+                    />
+                  }
+
+                  <Save
+                    isAuth={isAuth}
+                    postId={post.postId}
+                    userSaved={userSaved}
+                  />
+
+                </div>
+
+                <div>
+                  <h1 className='postTitle'>{post.title}</h1>
+                </div>
+              </div>
+
+              <div id="postTextContainer" className=' '>
+                {post.postText}
+              </div>
+              <h3 className='mt-5 text-zinc-400'>@{post.author.name}</h3>
+
+              {/* bottom row btns */}
+              <div className='bottom-btns-container mt-3 flex flex-row'>
+                <Like
+                  isAuth={isAuth}
+                  postId={post.postId}
+                  user={currentUser?.user}
+                  userLiked={post.liked} 
+                  loading={loading}
+                  likeBit={likeBit}
+                  likesRef={post.likesRef}
+                />
+
+                <button onClick={() => handleCommentBox(post.postId)}
+                  className='ml-3'>
+                  <CommentBtn />
+                </button>
+                <Share />
+              </div>
+
+              {
+                OpenCommentBox && commentPostId === post.postId &&
+                <CommentBox
+                  isAuth={isAuth}
+                  postId={commentPostId}
+                  user={currentUser?.user}
+                  isPostsChanged={isPostsChanged}
+                  commentRef={post.commentRef}
+                />
+              }
+
+            </div>
+          })
+        }
+      </div>
     </section>
   )
 }
 
 // * like 
-const Like = (props) => {
+export const Like = (props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [isLiked, setisLiked] = useState(false)
   const [LikeCount, setLikeCount] = useState(props.userLiked.length)
 
-  const handleLiked = (id) => {
-    console.log("handleLiked")
+  useEffect(() => {
     props.isAuth && setisLiked(Boolean(
       props.userLiked?.find(uid => uid == props.user?.uid
       )))
+  }, [])
+
+  const handleLiked = (id) => {
+    console.log("handleLiked")
+
     if (props.isAuth) {
       if (isLiked) {
         dispatch(removeLiked(id))
@@ -170,7 +205,7 @@ const Like = (props) => {
 }
 
 // * save
-const Save = (props) => {
+export const Save = (props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [isSaved, setIsSaved] = useState(false)
@@ -202,10 +237,15 @@ const Save = (props) => {
   </button>
 }
 
-const Delete = (props) => {
+export const Delete = (props) => {
   const dispatch = useDispatch()
+
   const handldeDeletePost = () => {
-    dispatch(deletePost(props.postId))
+    const data = {
+      id: props.postId,
+      commentRef: props.commentRef
+    }
+    dispatch(deletePost(data))
     dispatch(getPost)
     console.log("post deleted")
   }
@@ -217,10 +257,10 @@ const Delete = (props) => {
 }
 
 // * comment 
-const CommentBtn = () => <FaRegComment size='22' id='bottomIcons' />
+export const CommentBtn = () => <FaRegComment size='22' id='bottomIcons' />
 
 // * share
-const Share = () => {
+export const Share = () => {
   const handelShare = () => {
     console.log("shared")
   }

@@ -313,20 +313,24 @@ md:w-6/12
   transition-all duration-300 
 }
 
-#postContainer{
-   @apply m-20 rounded-lg shadow-2xl p-5 
-      bg-gray-100 dark:bg-gray-600
-    transition-all duration-300
+.PostsContainers{
+  @apply mt-28
+}
 
+#postContainer{
+   @apply 
+   mb-0 mt-8 rounded-lg shadow-xl p-5 
+  bg-gray-100 dark:bg-gray-600
+  text-gray-600 dark:text-gray-100
+    transition-all duration-300
          lg:mx-44
          md:mx-20
          sm:ml-20 sm:mr-20
          xs:ml-0 xs:mr-7
 }
-#postContainer{
-  @apply text-gray-600 dark:text-gray-100
-  
-}
+
+
+
 #postHeader{
   @apply text-xl uppercase text-center font-semibold mb-4 
 }
@@ -358,7 +362,7 @@ md:w-6/12
  /* ++++++++++++  Profile ++++++++++++++++ */
 
 .profile-container {
-@apply flex flex-col h-screen w-screen
+@apply flex flex-col h-full w-screen
 bg-gray-100 dark:bg-gray-700
 
 }
@@ -371,18 +375,21 @@ bg-gray-100 dark:bg-gray-700
    active:scale-75 
    transition-all duration-300
 
+
 } 
 
 .profile-header {
   @apply  flex justify-center 
-   h-2/6 mt-20  relative z-0 w-screen 
-  
+  h-2/6 mt-24  relative z-0 w-screen 
 }
 
 .cover-pic-container{
   @apply flex relative mr-1
-  sm:w-11/12 md:w-8/12 
+  lg:w-8/12
+  md:w-10/12 
+  sm:w-11/12 
   xs:w-full xs:mr-0 xs:-mt-4
+  
 }
 
 .cover-pic {
@@ -393,15 +400,24 @@ bg-gray-100 dark:bg-gray-700
 
 
 .cover-cam-position{
-  @apply top-[12rem]
-  sm:left-[38rem] md:left-[58rem] 
+  @apply top-[12rem] 
+  /* lg:ml-44 */
+  lg:left-[40rem]
+  md:left-[30rem]
+  sm:left-[34rem]
+  xs:left-80
+
+   
 }
 
 .profile-pic-container {
   @apply  rounded-full w-40 flex items-center
    absolute z-10  top-24
   mb-5 bg-green-600 p-1
-  sm:left-20 md:left-72
+  lg:ml-36
+  sm:left-20 
+  md:left-32
+  overflow-hidden
 }
 
 .profile-pic {
@@ -413,8 +429,11 @@ bg-gray-100 dark:bg-gray-700
 }
 
 .profile-butons{
-  @apply mt-8 
-  sm:ml-24  md:ml-72 
+  @apply mt-12 
+  lg:ml-72
+  md:ml-32 
+  sm:ml-20
+  xs:ml-10
 }
 
 .profile-btn {
@@ -435,13 +454,19 @@ bg-gray-100 dark:bg-gray-700
   @apply  mt-10 p-5 rounded-xl shadow-2xl 
   dark:bg-gray-600 bg-gray-300 
  text-gray-600 dark:text-gray-100
- sm:mx-8 md:mx-64
+ lg:mx-60
+ md:mx-16
+ sm:mx-8 
+
+
 
 }
 
 .profile-userPosts{
- @apply flex flex-col p-5 mt-5
- bg-gray-300 rounded-xl 
+ @apply flex flex-col p-2 mt-5
+ dark:bg-gray-700 bg-gray-300 
+ rounded-xl
+  overflow-hidden
  md:mx-64 sm:mx-8
 }
 
@@ -457,7 +482,7 @@ bg-gray-100 dark:bg-gray-700
 }
 
 .comment{
-  @apply  m-1 p-2 bg-sky-800 flex flex-col
+  @apply  m-1 p-2 bg-sky-800 flex flex-row
   rounded-xl mr-10 px-3 
   sm:w-4/6 xs:w-4/6 lg:w-3/6 
 }
@@ -482,10 +507,27 @@ bg-gray-100 dark:bg-gray-700
 }
 
 
+.delete-comment-btn{
+  @apply text-zinc-500 dark:text-zinc-300 
+  dark:hover:text-zinc-100  hover:text-zinc-900
+  active:text-gray-800 active:scale-75
+  transition-all duration-300
+  cursor-pointer
+}
 
 
 
+/* * ++++++++++++  loading animation  ++++++++++++++++ */
+ 
+.postTextContainer-skeleton{
+  @apply w-full h-2 animate-pulse text-sm my-3
+  bg-gray-600 dark:bg-gray-100 rounded-2xl opacity-10
+}
 
+.postTextTitle-load{
+ @apply  dark:bg-stone-300 bg-stone-600 opacity-10
+ my-8 w-72 h-7 mx-auto rounded-2xl animate-pulse
+}
 
 
 }

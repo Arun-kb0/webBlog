@@ -3,13 +3,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { userLogout } from '../features/redux/firebase/auth/authAction'
+import { search } from '../features/redux/firebase/elasticSearch/SearchActions'
 
 import { FaSearch, FaHashtag, FaHamburger } from 'react-icons/fa'
 import { BiLogIn, BiLogOut } from 'react-icons/bi'
 import { FaSun, FaMoon } from 'react-icons/fa'
 import { HiMenuAlt1 } from 'react-icons/hi'
 import { IoClose } from 'react-icons/io5'
-import UseDarkMode from './hooks/UseDarkMode'
+import UseDarkMode from '../hooks/UseDarkMode'
 
 function Navbar(props) {
   const { isAuth } = useSelector((store) => {
@@ -58,9 +59,17 @@ const ThemeIcon = () => {
 }
 
 const Search = () => {
+  const dispatch = useDispatch()
+
+  const handleSearch = (e)=>{
+      console.log("handleSearch")
+      dispatch(search(e.target.value))
+  }
+
   return (
     <div className='search'>
-      <input className='search-input' type='text' placeholder='Search...' />
+      <input onChange={handleSearch}
+      className='search-input' type='text' placeholder='Search...' />
       <FaSearch size='18' className=' my-auto' />
     </div>
   )

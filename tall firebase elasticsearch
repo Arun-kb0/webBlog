@@ -1,0 +1,95 @@
+[33mcommit 54912aedc88e8bbbc69cc2da8dadfd51f3d06f48[m[33m ([m[1;36mHEAD -> [m[1;32mreact-async-setup[m[33m)[m
+Author: noreplay <noreplay>
+Date:   Thu Mar 30 18:51:16 2023 +0530
+
+    comments and like count added
+
+[33mcommit 121926d0987a02fcdf7543f61411e5fbff8ecc4e[m
+Author: noreplay <noreplay>
+Date:   Mon Mar 27 17:28:17 2023 +0530
+
+    profile demo page added
+
+[33mcommit 6c129db42f5a4cf4dc6f0d2eb7dbfe99b1e00bec[m
+Author: noreplay <noreplay>
+Date:   Thu Mar 16 13:40:15 2023 +0530
+
+    remove liked and saved added
+
+[33mcommit aa20850044f911a2ecf8ba290c9bf3655ea0f241[m
+Author: noreplay <noreplay>
+Date:   Wed Mar 15 13:06:34 2023 +0530
+
+    liked and saved post updation added
+
+[33mcommit 8653dacbf8f9cd75e4302488cfa7e460fbf1c826[m
+Author: noreplay <noreplay>
+Date:   Tue Feb 14 04:09:42 2023 +0530
+
+    redux async added
+
+[33mcommit 6d9b6b240bce8a5ce4ac36cde6884a97a9b4806c[m[33m ([m[1;32mv2[m[33m, [m[1;32mredux-saga-setup[m[33m)[m
+Author: noreplay <noreplay>
+Date:   Wed Dec 28 09:47:41 2022 +0530
+
+    unwanted code removed
+
+[33mcommit ce7b7ac62b56f2147998c97da781b9bc711ca0f1[m
+Author: noreplay <noreplay>
+Date:   Tue Dec 27 22:19:19 2022 +0530
+
+    saved and liked arrays moved to users collection
+
+[33mcommit 9c9fa989ca1578d12dca4b2281108f50f8d551d4[m
+Author: noreplay <noreplay>
+Date:   Tue Dec 27 09:47:38 2022 +0530
+
+    crudSlice liked and saved  data updation created
+
+[33mcommit f05a528d6890ff0f0b8245919c2dba17d2dd9d88[m
+Author: noreplay <noreplay>
+Date:   Sun Dec 25 01:33:17 2022 +0530
+
+    added crudReducer for firebase
+
+[33mcommit ca0d82cc5e066e69d040018341698597990ee674[m
+Author: noreplay <noreplay>
+Date:   Sat Dec 24 11:04:12 2022 +0530
+
+    added bg image to forms
+
+[33mcommit 5f7c47e640d2ede7271682f14477680664679a91[m
+Author: noreplay <noreplay>
+Date:   Fri Dec 23 20:04:07 2022 +0530
+
+    Signup page completed
+
+[33mcommit fe3456ae7a3e08ef17582638037a316739f8f37b[m[33m ([m[1;32mV1[m[33m)[m
+Author: noreplay <noreplay>
+Date:   Thu Dec 22 22:15:55 2022 +0530
+
+    home and createPost finsished
+
+[33mcommit a796427ec309d9593911c445986eb47d6169c59a[m
+Author: noreplay <noreplay>
+Date:   Mon Dec 19 23:56:12 2022 +0530
+
+    create post page dummy created
+
+[33mcommit 5571c934de58a6d732404b39c3e9a943e3cd3938[m
+Author: noreplay <noreplay>
+Date:   Mon Dec 19 01:57:12 2022 +0530
+
+    redux setup completed
+
+[33mcommit f2eed074009e968795800149e449b6d72b2b96d6[m
+Author: noreplay <noreplay>
+Date:   Sat Dec 17 14:20:42 2022 +0530
+
+    added login page
+
+[33mcommit 2d8523e7b866778979447bfede75284a65cff61d[m[33m ([m[1;32mmaster[m[33m)[m
+Author: noreplay <noreplay>
+Date:   Thu Dec 15 15:51:05 2022 +0530
+
+    initial commit
