@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { IoCalendarNumber, IoClose } from 'react-icons/io5'
 import { IoTrashBinOutline } from 'react-icons/io5'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { commentPost, getComments, deleteComment } from '../../features/redux/firebase/comment/commentActions'
-import { comment } from 'postcss'
 
 const CommentBox = (props) => {
 
@@ -63,12 +61,15 @@ const CommentList = (props) => {
               <span className='commented-user'>@{comment.username}</span>
             </div>
 
-            <div className='flex-shrink-0  delete-comment-btn'>
-              <i onClick={() => handleDelete(comment)}
-                className=''
-              ><IoTrashBinOutline size='20' />
-              </i>
-            </div>
+            { comment.uid === props.uid &&
+              <div className='delete-comment-btn'>
+
+                <i onClick={() => handleDelete(comment)}
+                  className=''
+                ><IoTrashBinOutline size='20' />
+                </i>
+              </div>
+            }
 
           </li>
         ))

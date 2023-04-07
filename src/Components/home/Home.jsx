@@ -10,9 +10,11 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 import {
-  getPost, savePost, likePost, deletePost, removeLiked,
-  removeSaved,
+  getPost, savePost, deletePost, removeSaved,
+  // removeLiked,likePost, getLiked
 } from '../../features/redux/firebase/fireStore/firestoreActions'
+
+import {likePost,getLiked,removeLiked  } from '../../features/redux/firebase/like/likeActions'
 
 import CommentBox from './CommentBox'
 import HomePageLoad from './HomePageLoad'
@@ -30,7 +32,7 @@ function Home(props) {
   const location = useLocation()
 
   const { postArray, isEmptyArray, arraySize, isPostsChanged,
-    userLiked, userSaved, saveBit, likeBit, loading } = useSelector((store) => {
+    likes, userSaved, saveBit, likeBit, loading } = useSelector((store) => {
       return store.firestoreDB
     })
 
@@ -52,8 +54,11 @@ function Home(props) {
         PostsContainers: 'm-0 p-0 '
       })
       console.log(postLists)
+
     } else {
       dispatch(getPost())
+      dispatch(getLiked())
+
       !isEmptyArray && !isCancelled
       setPostLists((prev) =>
         postArray?.map((doc) => {
@@ -66,15 +71,12 @@ function Home(props) {
       isCancelled = true
     }
 
-    // console.log("isPostsChanged " + isPostsChanged)
-    // console.log("arraySize " + arraySize)
-  }, [arraySize, likeBit, saveBit, isPostsChanged, props.isProfilePost])
+  }, [arraySize, saveBit, isPostsChanged, props.isProfilePost])
 
 
   const handleCommentBox = (id) => {
     setOpenCommentBox(!OpenCommentBox)
     setCommentPostId(id)
-    // console.log(addedComments)
   }
 
   return (
@@ -101,6 +103,7 @@ function Home(props) {
                       isAuth={isAuth}
                       postId={post.postId}
                       commentRef={post.commentRef}
+                      likesRef={post.likesRef}
                     />
                   }
 
@@ -128,11 +131,12 @@ function Home(props) {
                   isAuth={isAuth}
                   postId={post.postId}
                   user={currentUser?.user}
-                  userLiked={post.liked} 
                   loading={loading}
                   likeBit={likeBit}
                   likesRef={post.likesRef}
-                />
+                  userLiked={post.liked}
+                  likes={likes}
+                  likeCount={post.likeCount} />
 
                 <button onClick={() => handleCommentBox(post.postId)}
                   className='ml-3'>
@@ -165,23 +169,29 @@ export const Like = (props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [isLiked, setisLiked] = useState(false)
-  const [LikeCount, setLikeCount] = useState(props.userLiked.length)
+  const [LikeCount, setLikeCount] = useState(props.likeCount)
+  const { likes } = useSelector(store => store.likeReducer)
 
   useEffect(() => {
-    props.isAuth && setisLiked(Boolean(
-      props.userLiked?.find(uid => uid == props.user?.uid
-      )))
+    console.log("likes")
+    console.log(likes)
+    props.isAuth && likes
+    setisLiked(Boolean(
+      likes[props.postId]?.find((uid) => {
+        return uid === props.user?.uid
+      })
+    ))
+
   }, [])
 
   const handleLiked = (id) => {
-    console.log("handleLiked")
 
     if (props.isAuth) {
       if (isLiked) {
-        dispatch(removeLiked(id))
+        dispatch(removeLiked({ id, likeId: props.likesRef }))
         setLikeCount(prev => prev - 1)
       } else {
-        dispatch(likePost(id))
+        dispatch(likePost({ id, likeId: props.likesRef }))
         setLikeCount(prev => prev + 1)
       }
       console.log(isLiked)
@@ -189,8 +199,6 @@ export const Like = (props) => {
 
     } else
       navigate('/login')
-    console.log("post liked")
-    console.count(props.userLiked)
   }
 
   return <button onClick={() => { handleLiked(props.postId) }}
@@ -243,7 +251,8 @@ export const Delete = (props) => {
   const handldeDeletePost = () => {
     const data = {
       id: props.postId,
-      commentRef: props.commentRef
+      commentRef: props.commentRef,
+      likesRef: props.likesRef
     }
     dispatch(deletePost(data))
     dispatch(getPost)

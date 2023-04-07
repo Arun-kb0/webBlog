@@ -3,7 +3,7 @@ import {
     GET_COMMENT_FAILED, GET_COMMENT_START, GET_COMMENT_SUCCESS, DELETE_COMMENT_START, DELETE_COMMENT_SUCCESS, DELETE_COMMENT_FAILED
 } from "../../constants";
 
-import { db, auth } from "../../../../firebase-config";
+import { db } from "../../../../firebase-config";
 import {
     collection, doc, updateDoc, arrayUnion, onSnapshot, arrayRemove,
 } from "firebase/firestore";
@@ -126,8 +126,8 @@ export const getComments = (commentId) => {
     }
 }
 
-
-export const deleteComment = ({comment, id}) => {
+//  delete comment
+export const deleteComment = ({ comment, id }) => {
     console.log("deleteComment")
 
     return async function (dispatch) {
@@ -137,11 +137,9 @@ export const deleteComment = ({comment, id}) => {
 
         try {
             const commentRef = doc(db, 'comments', id)
-             await updateDoc(commentRef, {
+            await updateDoc(commentRef, {
                 postComments: arrayRemove(comment)
             })
-            
-
             dispatch(deleteCommetSuccess())
         } catch (error) {
             console.log(error)

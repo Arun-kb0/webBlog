@@ -1,16 +1,13 @@
 import {
     GET_POST_START, GET_POST_SUCCESS, GET_POST_FAILED,
     SAVE_POST_START, SAVE_POST_SUCCESS, SAVE_POST_FAILED,
-    LIKE_POST_START, LIKE_POST_FAILED, LIKE_POST_SUCCESS,
     ADD_POST_START, ADD_POST_SUCCESS, ADD_POST_FAILED,
     DELETE_POST_FAILED, DELETE_POST_SUCCESS, DELETE_POST_START,
-    REMOVE_LIKED_POST_FAILED, REMOVE_LIKED_POST_SUCCESS, REMOVE_LIKED_POST_START,
     REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED,
-
 } from "../../constants"
 
 const initialState = {
-    loading: null,
+    loading: false,
     currentUSer: null,
     postArray: null,
     isEmptyArray: true,
@@ -84,31 +81,6 @@ const firestoreReducer = (state = initialState, action) => {
             }
 
 
-        // * like post cases
-        case LIKE_POST_START:
-            console.log("LIKE_POST_START called")
-            return {
-                ...state,
-                loading: true,
-            }
-
-        case LIKE_POST_SUCCESS:
-            console.log("LIKE_POST_SUCCESS called")
-            return {
-                ...state,
-                likeBit: !state.likeBit,
-                loading: false
-
-            }
-
-        case LIKE_POST_FAILED:
-            console.log("LIKE_POST_FAILED called")
-            return {
-                ...state,
-                loading: false
-            }
-
-
         // * add post cases
         case ADD_POST_START:
             console.log("ADD_POST_START called")
@@ -154,27 +126,8 @@ const firestoreReducer = (state = initialState, action) => {
                 loading: false
             }
 
-        // * remove liked post cases 
-        case REMOVE_LIKED_POST_START:
-            console.log("REMOVE_LIKED_POST_START called")
-            return {
-                ...state,
-                loading: true
-            }
 
-        case REMOVE_LIKED_POST_SUCCESS:
-            console.log("REMOVE_LIKED_POST_SUCCESS called")
-            return {
-                ...state,
-                likeBit: !state.likeBit,
-                loading: false
-            }
-        case REMOVE_LIKED_POST_FAILED:
-            console.log("REMOVE_LIKED_POST_FAILED called")
-            return {
-                ...state,
-                loading: false
-            }
+
 
         // * remove saved cases 
         case REMOVE_SAVED_POST_START:
@@ -183,7 +136,7 @@ const firestoreReducer = (state = initialState, action) => {
                 ...state,
                 loading: true
             }
-0
+            0
         case REMOVE_SAVED_POST_SUCCESS:
             console.log("REMOVE_SAVED_POST_SUCCESS called")
             return {
@@ -198,7 +151,7 @@ const firestoreReducer = (state = initialState, action) => {
                 loading: false
             }
 
-       
+
         // *default
         default:
             return state

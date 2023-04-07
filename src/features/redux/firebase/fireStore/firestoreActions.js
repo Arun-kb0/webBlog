@@ -1,17 +1,14 @@
 import {
     GET_POST_FAILED, GET_POST_START, GET_POST_SUCCESS,
     SAVE_POST_FAILED, SAVE_POST_SUCCESS, SAVE_POST_START,
-    LIKE_POST_START, LIKE_POST_SUCCESS, LIKE_POST_FAILED,
     ADD_POST_START, ADD_POST_SUCCESS, ADD_POST_FAILED,
     DELETE_POST_START, DELETE_POST_SUCCESS, DELETE_POST_FAILED,
-    REMOVE_LIKED_POST_FAILED, REMOVE_LIKED_POST_START, REMOVE_LIKED_POST_SUCCESS,
     REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED,
 } from "../../constants";
 import { auth, db } from "../../../../firebase-config";
 import {
     collection, getDocs, doc, updateDoc,
     arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove,
-    onSnapshot,
 } from "firebase/firestore";
 
 
@@ -61,27 +58,6 @@ const savePostFailed = () => {
 }
 
 
-// * like post
-const likePostStart = () => {
-    console.log("likePostStart called ")
-    return {
-        type: LIKE_POST_START
-    }
-}
-const likePostSuccess = () => {
-    console.log("likePostSuccess called ")
-    return {
-        type: LIKE_POST_SUCCESS
-    }
-}
-const likePostFailed = () => {
-    console.log("likePostFailed called ")
-    return {
-        type: LIKE_POST_FAILED
-    }
-}
-
-
 // * add post
 const addPostStart = () => {
     console.log("addPostStart called")
@@ -98,7 +74,6 @@ const addPostSuccess = () => {
 }
 
 const addPostFailed = () => {
-    console.log("addPostFailed called")
     return {
         type: ADD_POST_FAILED
     }
@@ -106,61 +81,38 @@ const addPostFailed = () => {
 
 // * deletePost
 const deletePostStart = () => {
-    console.log(" called")
     return {
         type: DELETE_POST_START
     }
 }
 
 const deletePostSuccess = () => {
-    console.log("deletePostSuccess called")
     return {
         type: DELETE_POST_SUCCESS
     }
 }
 
 const deletePostFailed = () => {
-    console.log("deletePostFailed called")
     return {
         type: DELETE_POST_FAILED
     }
 }
 
-//  * remove likded post
-const removeLikdePostStart = () => {
-    console.log("removeLikdePostStart called")
-    return {
-        type: REMOVE_LIKED_POST_START
-    }
-}
-const removeLikdePostSuccess = () => {
-    console.log("removeLikdePostSuccess called")
-    return {
-        type: REMOVE_LIKED_POST_SUCCESS
-    }
-}
-const removeLikdePostFailed = (error) => {
-    console.log("removeLikdePostFailed called")
-    return {
-        type: REMOVE_LIKED_POST_FAILED,
-        payload: error
-    }
-}
 
 // * remove saved post
-export const removeSavedPostStart = () => {
+const removeSavedPostStart = () => {
     return {
         type: REMOVE_SAVED_POST_START,
     }
 }
 
-export const removeSavedPostSuccess = () => {
+const removeSavedPostSuccess = () => {
     return {
         type: REMOVE_SAVED_POST_SUCCESS,
     }
 }
 
-export const removeSavedPostFailed = (error) => {
+const removeSavedPostFailed = (error) => {
     return {
         type: REMOVE_SAVED_POST_FAILED,
         payload: error
@@ -258,54 +210,6 @@ export const removeSaved = (id) => {
 }
 
 
-// * like post async
-export const likePost = (id) => {
-
-    return async function (dispatch) {
-        // console.log("likePost called")
-        dispatch(likePostStart())
-
-        try {
-            const postRef = doc(db, 'posts', id)
-            const unionRes = await updateDoc(postRef, {
-                liked: arrayUnion(`${auth.currentUser.uid}`)
-            })
-
-
-
-            console.log(unionRes)
-            dispatch(likePostSuccess())
-
-        } catch (error) {
-            console.log(error)
-            dispatch(likePostFailed())
-        }
-
-
-
-    }
-}
-
-// remove liked
-export const removeLiked = (id) => {
-    return async function (dispatch) {
-        // console.log("remove liked called")
-        console.log(id)
-        dispatch(removeLikdePostStart())
-        try {
-            const postRef = doc(db, 'posts', id)
-            await updateDoc(postRef, {
-                liked: arrayRemove(`${auth.currentUser.uid}`)
-            })
-
-            dispatch(removeLikdePostSuccess())
-        } catch (error) {
-            console.log(error)
-            dispatch(removeLikdePostFailed(error))
-        }
-    }
-}
-
 // *add post async 
 export const addPost = (data) => {
 
@@ -321,10 +225,10 @@ export const addPost = (data) => {
             data.doc.commentRef = commentSnap.id
             // console.warn(commentSnap.id)
 
-            const likeRef = collection(db,'likes')
-            const likeDoc = await addDoc(likeRef,{})
+            const likeRef = collection(db, 'likes')
+            const likeDoc = await addDoc(likeRef, {})
             const likeSnap = await getDoc(likeDoc)
-            data.doc.likesRef = likeSnap.id  
+            data.doc.likesRef = likeSnap.id
 
             const collectionRef = collection(db, data.docName)
             const res = await addDoc(collectionRef, data.doc)
@@ -346,15 +250,15 @@ export const deletePost = (data) => {
 
         try {
             dispatch(deletePostStart())
-
             const commentRef = doc(db, "comments", data.commentRef)
             await deleteDoc(commentRef)
+            const likesRef = doc(db, 'likes', data.likesRef)
+            await deleteDoc(likesRef)
             const postRef = doc(db, "posts", data.id)
             await deleteDoc(postRef)
-
             dispatch(deletePostSuccess())
-        } catch (error) {
 
+        } catch (error) {
             console.log(error)
             dispatch(deletePostFailed())
         }
