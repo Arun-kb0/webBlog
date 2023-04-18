@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { IoTrashBinOutline } from 'react-icons/io5'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { commentPost, getComments, deleteComment } from '../../features/redux/firebase/comment/commentActions'
+import { doc } from 'firebase/firestore'
+
+// import { IoTrashBinOutline } from 'react-icons/io5'
+import{IoTrashBinOutline} from '../../imports/reactIcons'
 
 const CommentBox = (props) => {
 
@@ -61,7 +64,7 @@ const CommentList = (props) => {
               <span className='commented-user'>@{comment.username}</span>
             </div>
 
-            { comment.uid === props.uid &&
+            {comment.uid === props.uid &&
               <div className='delete-comment-btn'>
 
                 <i onClick={() => handleDelete(comment)}
@@ -89,10 +92,8 @@ const CommentInput = (props) => {
   }
 
   const hanldeCommentInput = () => {
+
     const timestamp = new Date().getTime();
-
-
-    console.log("comment input")
     !props.isAuth && navigate("/login")
     console.log(props.postId)
 
@@ -107,14 +108,17 @@ const CommentInput = (props) => {
       }
     }
     dispatch(commentPost(data))
+    setComment("")
 
   }
 
   return <div className='commentInput-container '>
-    <textarea placeholder='write a comment' type='text'
-      className='comment-input'
+    <textarea
+      className='comment-input '
+      placeholder='write a comment'
+      type='text'
+      value={comment}
       onChange={handleText}>
-
     </textarea>
     <button className='btn comment-btn'
       onClick={hanldeCommentInput}>post comment</button>

@@ -5,19 +5,19 @@ import { useDispatch, useSelector } from 'react-redux'
 import { userLogout } from '../features/redux/firebase/auth/authAction'
 import { search } from '../features/redux/firebase/elasticSearch/SearchActions'
 
-import { FaSearch, FaHashtag, FaHamburger } from 'react-icons/fa'
-import { BiLogIn, BiLogOut } from 'react-icons/bi'
-import { FaSun, FaMoon } from 'react-icons/fa'
-import { HiMenuAlt1 } from 'react-icons/hi'
-import { IoClose } from 'react-icons/io5'
 import UseDarkMode from '../hooks/UseDarkMode'
+
+import {
+  FaSearch, FaHashtag, BiLogIn, BiLogOut, HiMenuAlt1, IoClose, FaSun, FaMoon
+} from '../imports/reactIcons'
+
 
 function Navbar(props) {
   const { isAuth } = useSelector((store) => {
     return store.user
   })
 
-  const [viewSideBar, setviewSideBar] = useState(false)
+  const [viewSideBar, setviewSideBar] = useState(true)
   const handleClick = () => {
     console.log('hamberger handle click')
     setviewSideBar(!viewSideBar)
@@ -44,7 +44,7 @@ function Navbar(props) {
 
 
 
-
+// * theme icon
 const ThemeIcon = () => {
   const [darkTheme, setDarkTheme] = UseDarkMode();
   const handleMode = () => setDarkTheme(!darkTheme)
@@ -58,26 +58,43 @@ const ThemeIcon = () => {
   )
 }
 
+
+// * search
 const Search = () => {
   const dispatch = useDispatch()
-
-  const handleSearch = (e)=>{
-      console.log("handleSearch")
-      dispatch(search(e.target.value))
+  const navigate = useNavigate()
+  const [searchString, setsearchString] = useState('')
+  const handleSearch = (e) => {
+    e.preventDefault()
+    console.log("handleSearch")
+    dispatch(search(searchString))
+    navigate('/search')
   }
 
   return (
     <div className='search'>
-      <input onChange={handleSearch}
-      className='search-input' type='text' placeholder='Search...' />
-      <FaSearch size='18' className=' my-auto' />
+      <input
+        onChange={(e) => setsearchString(e.target.value)}
+        className='search-input'
+        type='text'
+        placeholder='Search...'
+      />
+      <i className='my-auto mx-1 cursor-pointer' >
+        <FaSearch
+          size='18'
+          onClick={handleSearch}
+        />
+      </i>
     </div>
   )
 }
 
+// * logout
 const LogoutIcon = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const {following,followingSize} = useSelector(state=> state.followReducer)
+
   const signUserOut = () => {
     dispatch(userLogout())
     navigate("/login")

@@ -8,10 +8,10 @@ import { addPost } from '../features/redux/firebase/fireStore/firestoreActions'
 function CreatePost() {
   const [title, setTitle] = useState('')
   const [postText, setPostText] = useState('')
+  const [hashtags, setHashtags] = useState()
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
 
   const { isAuth, currentUser } = useSelector((store) => {
     return store.user
@@ -19,21 +19,24 @@ function CreatePost() {
 
   const createPost = () => {
     console.log("currentUser")
-    // console.log(currentUser.user.displayName)
-    // console.log(currentUser.user.uid)
+
+    let hashtagsArray = hashtags.split("#")
+    hashtagsArray = hashtagsArray.filter(item => item != "")
+
     const data = {
       docName: "posts",
       doc: {
         title,
         postText,
+        hashtags: hashtagsArray,
         author: {
           name: currentUser.user.displayName,
           id: currentUser.user.uid,
           timeStamp: new Date().toUTCString()
         },
-        liked:[],
-        commentRef:null,
-        likesRef:null
+        commentRef: null,
+        likesRef: null,
+
       }
     }
     dispatch(addPost(data))
@@ -52,7 +55,7 @@ function CreatePost() {
 
         <div className='create-post-header'>
           <img className='create-post-wave'
-          src={wave2} alt='' />
+            src={wave2} alt='' />
           <h1 className='create-post-title' >Create Post</h1>
         </div>
 
@@ -62,11 +65,17 @@ function CreatePost() {
             onChange={(e) => { setTitle(e.target.value) }} />
         </div>
         <div className='p-1 pl-10 pr-10 h-1/2'>
-          <label className='CreatePostFieldText mt-4'>Post</label><br />
-          <textarea className='createPostInput h-44' placeholder='post'
+          <label className='CreatePostFieldText mt-2'>Post</label><br />
+          <textarea className='createPostInput h-36' placeholder='post'
             onChange={(e) => { setPostText(e.target.value) }} />
 
         </div>
+
+        <div className='create-post-inputs'>
+          <input className='createPostInput' placeholder='Hashtags'
+            onChange={(e) => setHashtags(e.target.value)} />
+        </div>
+
         <div className='flex justify-center p-2 pb-3'>
           <button className='dark:btn light-btn'
             onClick={createPost}>Submit Post</button>

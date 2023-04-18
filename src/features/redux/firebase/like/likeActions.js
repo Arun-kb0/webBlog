@@ -4,10 +4,17 @@ import {
     REMOVE_LIKED_POST_FAILED, REMOVE_LIKED_POST_SUCCESS, REMOVE_LIKED_POST_START
 } from "../../constants";
 import { db ,auth} from "../../../../firebase-config";
+
+// import {
+//     collection, getDocs, doc, updateDoc,
+//     arrayUnion, getDoc, arrayRemove,increment,
+// } from "firebase/firestore";
+
+
 import {
     collection, getDocs, doc, updateDoc,
     arrayUnion, getDoc, arrayRemove,increment,
-} from "firebase/firestore";
+} from '../../../../imports/firebaseFunctions'
 
 // * like post
 const likePostStart = () => {

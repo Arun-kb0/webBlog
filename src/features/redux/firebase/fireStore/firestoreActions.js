@@ -6,11 +6,16 @@ import {
     REMOVE_SAVED_POST_START, REMOVE_SAVED_POST_SUCCESS, REMOVE_SAVED_POST_FAILED,
 } from "../../constants";
 import { auth, db } from "../../../../firebase-config";
+
+// import {
+//     collection, getDocs, doc, updateDoc,
+//     arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove,
+// } from "firebase/firestore";
+
 import {
     collection, getDocs, doc, updateDoc,
     arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove,
-} from "firebase/firestore";
-
+} from '../../../../imports/firebaseFunctions'
 
 // * get post
 const getPostStart = () => {
@@ -176,7 +181,7 @@ export const savePost = (id) => {
                 }
             }
             const userActionRef = doc(db, data.docName, data.userData.userId)
-            const unionRes = updateDoc(userActionRef, {
+            const unionRes = await updateDoc(userActionRef, {
                 savedPosts: arrayUnion(`${data.userData.savedPosts}`)
             })
             console.log(unionRes)
@@ -230,6 +235,12 @@ export const addPost = (data) => {
             const likeSnap = await getDoc(likeDoc)
             data.doc.likesRef = likeSnap.id
 
+            // const shareRef = collection(db,'share')
+            // const shareDoc = await addDoc(shareRef,{})
+            // const shareSnap = await getDoc(shareDoc)
+            // data.doc.shareRef = shareSnap.id
+
+
             const collectionRef = collection(db, data.docName)
             const res = await addDoc(collectionRef, data.doc)
             console.log(res)
@@ -256,6 +267,8 @@ export const deletePost = (data) => {
             await deleteDoc(likesRef)
             const postRef = doc(db, "posts", data.id)
             await deleteDoc(postRef)
+
+
             dispatch(deletePostSuccess())
 
         } catch (error) {

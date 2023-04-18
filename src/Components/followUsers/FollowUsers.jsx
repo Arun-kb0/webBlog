@@ -1,0 +1,56 @@
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getUsers, getUserFollowList } from '../../features/redux/firebase/follow/followActions'
+import UserCard from './UserCard'
+
+import { useNavigate } from 'react-router-dom'
+
+function FollowUsers() {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const { usersList, usersListSize,following } = useSelector((state) => state.followReducer)
+    const { userDoc, isAuth } = useSelector(state => state.user)
+
+
+    const styles = {
+        userCardContainer: "user-card-container",
+        userCard: "user-card",
+        userCardProfileContainer: "user-card-profile-container",
+        profilePic: "profile-pic",
+        userCardElements: "user-card-elements",
+        userCardUserName: "user-card-username mx-3",
+    }
+
+    useEffect(() => {
+        !isAuth && navigate('/login')
+        dispatch(getUsers(userDoc))
+       isAuth  && !following && 
+        dispatch(getUserFollowList(userDoc?.followRef))
+
+        console.warn(usersList)
+        console.warn(following)
+    }, [usersListSize])
+
+    return (
+        <div className="follow-container">
+            <div className="follow-userlist  mt-28">
+                {
+                    usersList &&
+                    usersList.map((user) => (
+                        <UserCard
+                            username={user.name}
+                            uid={user.userId}
+                            followColId={userDoc.followRef}
+                            currentUserId = {userDoc.userId}
+                            currentUserName={userDoc.name}
+                            styles={styles}
+                        />
+                    ))
+                }
+            </div>
+        </div>
+    )
+}
+
+export default FollowUsers

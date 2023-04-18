@@ -1,23 +1,30 @@
-import React, { useEffect, useState } from 'react'
-
-import { IoTrashBinOutline } from 'react-icons/io5'
-import { BsBookmarkPlus, BsBookmarkCheckFill } from 'react-icons/bs'
-import { FaRegComment } from 'react-icons/fa'
-import { RiShareForwardLine } from 'react-icons/ri'
-import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'
+import React, { useEffect, useState, lazy, Suspense } from 'react'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
   getPost, savePost, deletePost, removeSaved,
-  // removeLiked,likePost, getLiked
 } from '../../features/redux/firebase/fireStore/firestoreActions'
 
-import {likePost,getLiked,removeLiked  } from '../../features/redux/firebase/like/likeActions'
+import { likePost, getLiked, removeLiked } from '../../features/redux/firebase/like/likeActions'
+import { removeShared, sharePost } from '../../features/redux/firebase/share/shareActions'
+import { getHashtagPosts } from '../../features/redux/firebase/hashtag/hashtagActions'
 
 import CommentBox from './CommentBox'
 import HomePageLoad from './HomePageLoad'
+
+
+import {
+  BsBookmarkPlus, BsBookmarkCheckFill,
+  FaRegComment,
+  RiShareForwardLine,
+  AiOutlineHeart,
+  AiFillHeart,
+  IoTrashBinOutline
+} from '../../imports/reactIcons'
+import { followUser } from '../../features/redux/firebase/follow/followActions'
+
 
 function Home(props) {
   const [postLists, setPostLists] = useState([])
@@ -28,50 +35,29 @@ function Home(props) {
     PostsContainers: 'PostsContainers'
   })
 
-  const dispatch = useDispatch()
-  const location = useLocation()
 
-  const { postArray, isEmptyArray, arraySize, isPostsChanged,
-    likes, userSaved, saveBit, likeBit, loading } = useSelector((store) => {
+  const { isPostsChanged, likes, userSaved, likeBit,
+    loading } = useSelector((store) => {
       return store.firestoreDB
     })
 
-  const { isAuth, currentUser } = useSelector((store) => {
+  const { isAuth, currentUser,userDoc } = useSelector((store) => {
     return store.user
   })
-
-
 
 
   useEffect(() => {
     console.count("home useEffect ")
     let isCancelled = false
 
-    if (location.pathname === '/profile') {
-      setPostLists(props.postLists)
-      setStyles({
-        home: 'dark:bg-gray-700  p-0 m-0',
-        PostsContainers: 'm-0 p-0 '
-      })
-      console.log(postLists)
-
-    } else {
-      dispatch(getPost())
-      dispatch(getLiked())
-
-      !isEmptyArray && !isCancelled
-      setPostLists((prev) =>
-        postArray?.map((doc) => {
-          return { ...doc.data(), postId: doc.id }
-        })
-      )
-    }
+    !isCancelled && setPostLists(props?.postLists)
 
     return () => {
       isCancelled = true
     }
 
-  }, [arraySize, saveBit, isPostsChanged, props.isProfilePost])
+  }, [props.postChangeBit, props.tagPostChange,
+  props.isProfilePost, props.searchChange])
 
 
   const handleCommentBox = (id) => {
@@ -81,106 +67,141 @@ function Home(props) {
 
   return (
 
-
-    <section className={styles.home} >
-      {
-        !postLists && <HomePageLoad />
-      }
-
-      <div className={styles.PostsContainers}>
+    <section className={props.styles.home} >
+      <Suspense fallback={<div>loading.......</div>}>
         {
-          postLists &&
-          postLists.map((post) => {
+          !postLists && <HomePageLoad />
+        }
 
-            return <div id="postContainer" key={post.postId}>
+        <div className={props.styles.PostsContainers}>
+          {
+            postLists &&
+            postLists.map((post) => {
 
-              <div id="postHeader" className=''>
-                <div className='flex justify-end'>
+              return <div id="postContainer" key={post.postId}>
 
-                  {
-                    isAuth && post.author.id === currentUser.user.uid &&
-                    <Delete
+                <div id="postHeader" className=''>
+                  <div className='flex justify-end'>
+
+                    {
+                      isAuth && post.author.id === currentUser.user.uid &&
+                      <Delete
+                        isAuth={isAuth}
+                        postId={post.postId}
+                        commentRef={post.commentRef}
+                        likesRef={post.likesRef}
+                        shareRef={post.shareRef}
+                      />
+                    }
+
+                    <Save
                       isAuth={isAuth}
                       postId={post.postId}
-                      commentRef={post.commentRef}
-                      likesRef={post.likesRef}
+                      userSaved={userSaved}
                     />
-                  }
 
-                  <Save
+                  </div>
+
+                  <div>
+                    <h1 className='postTitle'>{post.title}</h1>
+                  </div>
+                </div>
+
+                <div id="postTextContainer" className=' '>
+                  {post.postText}
+                </div>
+                <Hashtags
+                  hashtags={post.hashtags}
+                />
+                <h3 className='mt-1 text-zinc-400'>@{post.author.name}</h3>
+
+
+                <div className='bottom-btns-container mt-3 flex flex-row'>
+                  <Like
                     isAuth={isAuth}
                     postId={post.postId}
-                    userSaved={userSaved}
+                    user={currentUser?.user}
+                    loading={loading}
+                    likeBit={likeBit}
+                    likesRef={post.likesRef}
+                    likes={likes}
+                    likeCount={post?.likeCount}
+                     />
+
+                  <button onClick={() => handleCommentBox(post.postId)}
+                    className='ml-3'>
+                    <CommentBtn />
+                  </button>
+                  <Share
+                    postId={post.postId}
+                    isAuth={isAuth}
+                    user={currentUser?.user}
+                    userDoc={userDoc}
                   />
-
                 </div>
 
-                <div>
-                  <h1 className='postTitle'>{post.title}</h1>
-                </div>
+                {
+                  OpenCommentBox && commentPostId === post.postId &&
+                  <CommentBox
+                    isAuth={isAuth}
+                    postId={commentPostId}
+                    user={currentUser?.user}
+                    isPostsChanged={isPostsChanged}
+                    commentRef={post.commentRef}
+                  />
+                }
+
               </div>
+            })
+          }
+        </div>
 
-              <div id="postTextContainer" className=' '>
-                {post.postText}
-              </div>
-              <h3 className='mt-5 text-zinc-400'>@{post.author.name}</h3>
-
-              {/* bottom row btns */}
-              <div className='bottom-btns-container mt-3 flex flex-row'>
-                <Like
-                  isAuth={isAuth}
-                  postId={post.postId}
-                  user={currentUser?.user}
-                  loading={loading}
-                  likeBit={likeBit}
-                  likesRef={post.likesRef}
-                  userLiked={post.liked}
-                  likes={likes}
-                  likeCount={post.likeCount} />
-
-                <button onClick={() => handleCommentBox(post.postId)}
-                  className='ml-3'>
-                  <CommentBtn />
-                </button>
-                <Share />
-              </div>
-
-              {
-                OpenCommentBox && commentPostId === post.postId &&
-                <CommentBox
-                  isAuth={isAuth}
-                  postId={commentPostId}
-                  user={currentUser?.user}
-                  isPostsChanged={isPostsChanged}
-                  commentRef={post.commentRef}
-                />
-              }
-
-            </div>
-          })
-        }
-      </div>
+      </Suspense>
     </section>
   )
 }
+
+// * handle hashtags  
+const Hashtags = (props) => {
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleHashtags = (tag) => {
+    dispatch(getHashtagPosts(tag))
+    navigate('/hashtags')
+
+  }
+
+  return <div className='hashtags'>
+    {props.hashtags?.map((tag, index) => (
+      <span
+        onClick={() => handleHashtags(tag)}
+        key={index} >#{tag}
+      </span>
+    ))}
+  </div>
+}
+
+
 
 // * like 
 export const Like = (props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [isLiked, setisLiked] = useState(false)
-  const [LikeCount, setLikeCount] = useState(props.likeCount)
+  const [LikeCount, setLikeCount] = useState(props?.likeCount)
   const { likes } = useSelector(store => store.likeReducer)
 
   useEffect(() => {
     console.log("likes")
-    console.log(likes)
-    props.isAuth && likes
-    setisLiked(Boolean(
-      likes[props.postId]?.find((uid) => {
-        return uid === props.user?.uid
-      })
-    ))
+    // console.log(likes)
+    props.isAuth && likes &&
+      setisLiked(Boolean(
+        likes[props.postId]?.find((uid) => {
+          return uid === props.user?.uid
+        })
+      ))
 
   }, [])
 
@@ -203,7 +224,7 @@ export const Like = (props) => {
 
   return <button onClick={() => { handleLiked(props.postId) }}
     className='flex flex-row'>
-    <span className='pr-1'>{LikeCount}</span>
+    <span className='pr-1'>{LikeCount ? LikeCount : ""}</span>
     {
       props.isAuth && isLiked
         ? <AiFillHeart id="bottomIcons" className='fill-red-600' />
@@ -252,7 +273,7 @@ export const Delete = (props) => {
     const data = {
       id: props.postId,
       commentRef: props.commentRef,
-      likesRef: props.likesRef
+      likesRef: props.likesRef,
     }
     dispatch(deletePost(data))
     dispatch(getPost)
@@ -269,9 +290,29 @@ export const Delete = (props) => {
 export const CommentBtn = () => <FaRegComment size='22' id='bottomIcons' />
 
 // * share
-export const Share = () => {
+export const Share = (props) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+
   const handelShare = () => {
-    console.log("shared")
+   
+
+    if (props.isAuth) {
+      console.log("shared")
+      console.warn(props.user)
+
+      const data = {
+        uid: props.user.uid,
+        postId: props.postId
+      }
+      dispatch(sharePost({data,userDoc:props.userDoc}))
+
+      dispatch(followUser({data,userDoc: props.userDoc}))
+      // dispatch(removeShared(data))
+    } else {
+      navigate('/login')
+    }
   }
   return <button onClick={handelShare} className='pl-3 '>
     <RiShareForwardLine size='24' id='bottomIcons' />

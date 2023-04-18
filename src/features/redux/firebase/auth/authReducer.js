@@ -8,6 +8,7 @@ import {
 const initialState = {
     loading: false,
     currentUser: null,
+    userDoc: null,
     isAuth: false,
     error: null
 }
@@ -49,10 +50,12 @@ const authReducer = (state = initialState, action) => {
 
         case LOGIN_SUCCESS:
             console.log("LOGI_LOGIN_SUCCESS reducer is called")
+            // console.log(action.payload.userDoc)
             return {
                 ...state,
                 loading: false,
-                currentUser: action.payload,
+                currentUser: action.payload.currentUser,
+                userDoc: action.payload.userDoc,
                 isAuth: true
             }
         case LOGIN_FAILED:
@@ -75,7 +78,7 @@ const authReducer = (state = initialState, action) => {
             console.log("LOGOUT_SUCCESS is called")
             return {
                 ...state,
-                currentUser:null,
+                currentUser: null,
                 isAuth: false,
                 loading: false,
             }

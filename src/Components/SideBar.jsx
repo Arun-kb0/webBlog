@@ -1,12 +1,20 @@
 import React from 'react'
-import { AiFillHome } from 'react-icons/ai'
-import { BiMessageSquareAdd, BiLogOut, BiLogIn } from 'react-icons/bi'
-import { FaHashtag, FaUserCircle } from 'react-icons/fa'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { userLogout } from '../features/redux/firebase/auth/authAction'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+
+
+
+// import { AiFillHome } from 'react-icons/ai'
+// import { BiMessageSquareAdd, BiLogOut, BiLogIn } from 'react-icons/bi'
+// import { FaHashtag, FaUserCircle } from 'react-icons/fa'
+
+import {AiFillHome,IoPersonRemove,IoPersonAdd,
+    BiMessageSquareAdd, BiLogOut, BiLogIn,
+    FaHashtag, FaUserCircle
+} from '../imports/reactIcons'
 
 function SideBar() {
     const dispatch = useDispatch()
@@ -36,6 +44,11 @@ function SideBar() {
                 <i >
                     <Link to="/profile">
                         <SideBarIcon icon={<FaUserCircle size='28' />} text='profile' />
+                    </Link>
+                </i>
+                <i>
+                <Link to="/addfollowers">
+                        <SideBarIcon icon={<IoPersonAdd size='28' />} text='follow people' />
                     </Link>
                 </i>
                 <Divider />

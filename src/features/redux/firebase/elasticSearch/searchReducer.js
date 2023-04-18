@@ -1,10 +1,13 @@
+import { AiFillPayCircle } from "react-icons/ai";
 import { SEARCH_START, SEARCH_SUCCESS, SEARCH_FAILED } from "../../constants";
 
 
 const initialState = {
     loading: null,
     searchData: null,
-    error:null
+    collectionName:null ,
+    searchChange:false,
+    error: null,
 }
 
 const searchReducer = (state = initialState, action) => {
@@ -19,6 +22,9 @@ const searchReducer = (state = initialState, action) => {
             console.log("SEARCH_SUCCESS")
             return {
                 ...state,
+                searchData: action.payload.searchData,
+                collectionName: action.payload.collectionName,
+                searchChange:!state.searchChange,
                 loading: false
             }
 
@@ -26,6 +32,7 @@ const searchReducer = (state = initialState, action) => {
             console.log("SEARCH_FAILED")
             return {
                 ...state,
+                error: action.payload,
                 loading: false
             }
 

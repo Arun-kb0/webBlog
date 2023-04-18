@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from 'react'
+import Home from '../home/Home'
 import space from '../../assets/space.png'
 import solo from '../../assets/solo.png'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { AiFillCamera, AiOutlinePlus, AiFillEdit } from 'react-icons/ai'
-import Home from '../home/Home'
+
+import { AiFillCamera, AiOutlinePlus, AiFillEdit } from '../../imports/reactIcons'
+import Following from './Following'
+import Followers from './Followers'
 
 function Profile() {
     const { isAuth, currentUser } = useSelector((store) => store.user)
     const { postArray, isEmptyArray, arraySize, } = useSelector((store) => store.firestoreDB)
+    const { following, followingSize } = useSelector(state => state.followReducer)
 
     const [postLists, setPostLists] = useState([])
     const [userPostBit, setUserPostBit] = useState(false)
+    const [viewComponents, setViewComponents] = useState({
+        componentName: null
+    })
+
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -40,12 +48,19 @@ function Profile() {
         //     isCancelled=true
         // }) 
 
-    }, [userPostBit])
+    }, [userPostBit, followingSize])
+
 
     const hanldeUserPosts = () => {
-        setTimeout(() => {
-            setUserPostBit(!userPostBit )
-        }, [1000])
+        setUserPostBit(!userPostBit)
+    }
+
+    const handleViewFollowers = ({ viewBit, componentName }) => {
+        setViewComponents((prev) => ({
+            componentName: prev.componentName === componentName ? null : componentName,
+        }))
+
+        console.log(viewComponents)
     }
 
     return (
@@ -54,14 +69,45 @@ function Profile() {
 
             {isAuth &&
                 <div onLoad={hanldeUserPosts}>
-                    <div className='profile-header'>
-                        <CoverPic />
-                        <ProfilePic />
-                    </div>
-                    <UserButtons currentUser={currentUser} />
-                    <UserDetails currentUser={currentUser} />
-                        <UserPosts postLists={postLists} 
-                        userPostBit={userPostBit}/>
+                    {
+                        !viewComponents.componentName &&
+                        <div className='profile-header'>
+                            <CoverPic />
+                            <ProfilePic
+                                photo={solo}
+                            />
+                        </div>
+                    }
+                    <UserButtons
+                        currentUser={currentUser}
+                        view={handleViewFollowers}
+                    />
+
+                    {
+                        viewComponents.componentName === 'following' &&
+                        <Following
+
+                        />
+                    }
+
+                    {
+                        viewComponents.componentName === 'followers' &&
+                        <Followers />
+                    }
+
+
+
+                    {
+                        !viewComponents.componentName &&
+
+                        <div>
+                            <UserDetails currentUser={currentUser} />
+                            <UserPosts
+                                postLists={postLists}
+                                userPostBit={userPostBit}
+                            />
+                        </div>
+                    }
                 </div>
             }
         </section>
@@ -79,7 +125,7 @@ const CoverPic = () => (
     </div>
 )
 
-const ProfilePic = () => (
+export const ProfilePic = (props) => (
     <div className='profile-pic-container '>
         <img className='profile-pic '
             src={solo} alt='profile picture' />
@@ -91,16 +137,45 @@ const ProfilePic = () => (
 
 // * profile buttons 
 const UserButtons = (props) => {
+
+    const showContents = (componentName) => {
+        props.view({ componentName })
+    }
+
     return (
         <div className='profile-butons '>
             <p className='mb-2'><span className='profile-username'> {props.currentUser?.user.displayName}</span></p>
             <div className='flex'>
-                <button className='btn dark:light-btn profile-btn'>
-                    <i className=' pr-3'><AiOutlinePlus size='22' /></i>Add story
+                <button
+                    className='btn  profile-btn'
+                    onClick={() => showContents('followers')}
+
+                >
+                    <i className=' pr-3'><AiOutlinePlus size='22' /></i>
+                    Followers
                 </button>
-                <button className='btn dark:light-btn profile-btn '>
+                <button
+                    className='btn profile-btn '
+                    onClick={() => showContents('following')}
+                >
                     <i className='pr-3'><AiFillEdit size='20' /></i>
-                    Edit profile</button>
+                    Following
+                </button>
+                <button
+                    className='btn  profile-btn'
+                    onClick={() => showContents('following')}
+                >
+                    <i className=' pr-3'><AiOutlinePlus size='22' /></i>
+                    Add story
+                </button>
+                <button
+                    className='btn profile-btn '
+                    onClick={() => showContents('following')}
+                >
+                    <i className='pr-3'><AiFillEdit size='20' /></i>
+                    Edit profile
+                </button>
+
             </div>
         </div>
     )
@@ -119,13 +194,16 @@ const UserDetails = (props) => (
 
 
 const UserPosts = (props) => {
-    const [isProfilePost, setIsProfilePost] = useState(false)
-
+    const styles = {
+        home: '',
+        PostsContainers: ''
+    }
     return (
         <div className='profile-userPosts'>
-            <Home 
-            postLists={props.postLists} 
-            isProfilePost={props.userPostBit} 
+            <Home
+                postLists={props.postLists}
+                isProfilePost={props.userPostBit}
+                styles={styles}
             />
         </div>
     )
