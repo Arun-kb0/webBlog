@@ -416,17 +416,16 @@ bg-gray-100 dark:bg-gray-700
 }
 
 .profile-pic-container {
-  @apply  rounded-full w-40 flex items-center
-   absolute z-10  top-24
+  @apply  rounded-full flex items-center
+   absolute z-10  top-24  
   mb-5 bg-green-600 p-1
   lg:ml-36
   sm:left-20 
   md:left-32
-  overflow-hidden
 }
 
 .profile-pic {
-  @apply  rounded-full object-cover
+  @apply  rounded-full object-cover h-40  w-40
 }
 .profile-pic-cam-position{
   @apply top-28 left-28 
@@ -601,7 +600,7 @@ rounded-lg p-1 px-2 font-bold shadow-md
 }
 
 .user-card{
-  @apply w-3/12 m-1 
+  @apply w-3/12 m-1  
   
 }
 
@@ -609,12 +608,16 @@ rounded-lg p-1 px-2 font-bold shadow-md
   @apply w-24 rounded-full p-1 bg-green-600 mr-3
 }
 
+.userCard-profilePic{
+  @apply rounded-full object-cover w-24 h-20
+}
+
 .user-card-elements{
   @apply  px-1 py-3 
 }
 
 .user-card-username{
-@apply pb-2 text-xl
+@apply pb-2 text-xl font-semibold 
 }
 
 
@@ -639,7 +642,136 @@ dark:bg-gray-800  bg-gray-300
 }
 
 
+ 
+/* * ++++++++++++ inbox   ++++++++++++++++ */
+
+
+.inbox-container{
+  @apply bg-gray-100 dark:bg-gray-700 
+  /* block justify-center  */ 
+  items-center min-h-screen max-h-full
+  flex justify-center
+  p-1 pl-5 mt-0
+  transition-all duration-300 
+
+}
+
+.inbox{
+  @apply mt-20 flex bg-gray-800 rounded-xl 
+  overflow-hidden 
+  h-[85vh]
+  lg:w-10/12 
+  sm:w-11/12
+  md:w-11/12
 
 
 }
+
+
+/* * ++++++++++++ ChatSidebar   ++++++++++++++++ */
+.ChatsSidebarContainer{
+  @apply  w-4/12 h-screen bg-gray-500
+}
+
+.ChatsSidebar{
+  @apply p-1
+}
+
+
+
+
+/* * ++++++++++++ chats   ++++++++++++++++ */
+
+.chatsContainer{
+  @apply   w-10/12
+  /* flex-2 */
+}
+
+.chats{
+  @apply flex-row justify-between
+}
+
+
+
+
+
+
+/* * ++++++++++++ messages   ++++++++++++++++ */
+
+.messages{
+  @apply px-3 overflow-y-scroll
+   h-[75vh] 
+}
+
+
+/* * ++++++++++++ message   ++++++++++++++++ */
+
+.message{
+  @apply flex gap-2 
+}
+
+.messageOwner{
+  @apply flex-row-reverse
+}
+
+.messageContentTextOwner{
+  @apply flex flex-row-reverse mr-3 
+}
+
+.messageTextOwner{
+  @apply  bg-blue-500 text-gray-100 
+  rounded-tr-xl rounded-tl-xl rounded-bl-xl rounded-br-none 
+ px-4 py-2 my-3 max-w-max 
+
+}
+
+.messageInfo{
+  @apply flex flex-col w-2/12 py-2
+}
+
+.MessageUserImg{
+  @apply w-[50px] h-[50px] rounded-full 
+  object-cover 
+}
+
+.messageContent{
+@apply 
+w-10/12 gap-4 
+}
+
+.messageText{
+@apply bg-gray-300 text-gray-900
+ px-4 py-2 my-3 max-w-max 
+rounded-tr-xl rounded-br-xl  rounded-bl-xl 
+
+}
+
+.sendedImage{
+@apply  w-7/12 rounded-lg
+}
+
+/* * ++++++++++++ messagesInput   ++++++++++++++++ */
+
+.messageInputContainer{
+  @apply  bg-white p-2 py-4
+  flex align-middle justify-between 
+}
+
+.messageInput{
+  @apply w-full border-none outline-none 
+  text-slate-800 text-lg
+}
+
+.send{
+  @apply  flex items-center gap-2
+  sm:w-4/12 lg:w-3/12
+
+}
+
+
+
+
+
+}
+
 

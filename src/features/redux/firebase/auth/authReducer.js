@@ -1,7 +1,10 @@
 import {
     REGISTER_START, REGISTER_FAILED, REGISTER_SUCCESS,
     LOGIN_START, LOGIN_SUCCESS, LOGIN_FAILED,
-    LOGOUT_START, LOGOUT_FAILED, LOGOUT_SUCCESS
+    LOGOUT_START, LOGOUT_FAILED, LOGOUT_SUCCESS,
+    SET_USER_START, SET_USER_FAILED, SET_USER_SUCCESS,
+    UPLOAD_PROFILE_PIC_START, UPLOAD_PROFILE_PIC_SUCCESS, UPLOAD_PROFILE_PIC_FAILED,
+
 } from '../../constants'
 
 
@@ -9,7 +12,7 @@ const initialState = {
     loading: false,
     currentUser: null,
     userDoc: null,
-    isAuth: false,
+    isAuth : false,
     error: null
 }
 
@@ -27,9 +30,10 @@ const authReducer = (state = initialState, action) => {
             console.log("REGISTER_SUCCESS reducer is called")
             return {
                 ...state,
+                currentUser: action.payload.res,
+                userDoc: action.payload.userDoc,
+                isAuth: true,
                 loading: false,
-                currentUser: action.payload,
-                isAuth: true
             }
         case REGISTER_FAILED:
             console.log("REGISTER_FAILED reducer is called")
@@ -90,6 +94,58 @@ const authReducer = (state = initialState, action) => {
                 error: action.payload
             }
 
+        case SET_USER_START:
+            console.log(SET_USER_START)
+            return {
+                ...state,
+                loading: true,
+
+            }
+
+
+        case SET_USER_SUCCESS:
+            console.log("SET_USER_SUCCESS")
+            console.log(action.payload)
+            return {
+                ...state,
+                currentUser: action.payload.currentUser,
+                userDoc: action.payload.userDoc,
+                isAuth: action.payload.currentUser ? true : false,
+                loading: false,
+            }
+
+        case SET_USER_FAILED:
+            console.log("SET_USER_FAILED")
+            return {
+                ...state,
+                loading: false,
+
+            }
+
+        case UPLOAD_PROFILE_PIC_START:
+            console.log("UPLOAD_PROFILE_PIC_START")
+            return {
+                ...state,
+                loading: true
+            }
+
+
+        case UPLOAD_PROFILE_PIC_SUCCESS:
+            console.log("UPLOAD_PROFILE_PIC_SUCCESS")
+            return {
+                ...state,
+                userDoc:action.payload,
+                loading: false
+            }
+
+
+        case UPLOAD_PROFILE_PIC_FAILED:
+            console.log("UPLOAD_PROFILE_PIC_FAILED")
+            return {
+                ...state,
+                error:action.payload,
+                loading: false
+            }
 
         default:
             return state;

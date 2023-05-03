@@ -2,10 +2,15 @@ import {
     SHARE_START, SHARE_FAILED, SHARE_SUCCESS,
     REMOVE_SHARE_FAILED, REMOVE_SHARE_SUCCESS, REMOVE_SHARE_START,
     GET_SHARE_FAILED, GET_SHARE_START, GET_SHARE_SUCCESS,
+    GET_SAVED_START, GET_SAVED_SUCCESS, GET_SAVED_FAILED,
 } from "../../constants";
 
 import { db } from "../../../../firebase-config";
-import { doc, arrayUnion, getDoc, updateDoc, arrayRemove } from "../../../../imports/firebaseFunctions";
+import {
+    doc, arrayUnion, getDoc, updateDoc, arrayRemove,
+    getDocs
+} from "../../../../imports/firebaseFunctions";
+import { collection, query, where } from "firebase/firestore";
 
 // import { doc, arrayUnion, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
 
@@ -56,10 +61,37 @@ const removeSharedFailed = (error) => {
 }
 
 
+
+// * get saved 
+
+const getSavedPostsStart = () => {
+    return {
+        type: GET_SAVED_START
+
+    }
+}
+
+
+const getSavedPostsSuccess = (saved) => {
+    return {
+        type: GET_SAVED_SUCCESS,
+        payload:saved
+
+    }
+}
+
+
+const getSavedPostsFailed = () => {
+    return {
+        type: GET_SAVED_FAILED
+
+    }
+}
+
 // ! not completed 
 // ! complete after mesgaeing setup 
 
-export const sharePost = ({data,userDoc}) => {
+export const sharePost = ({ data, userDoc }) => {
     return async function (dispatch) {
         dispatch(shareStart())
 
@@ -68,12 +100,12 @@ export const sharePost = ({data,userDoc}) => {
             // const userSnap = await getDoc(userRef)
             // console.warn(userSnap.data().shareRef)
             // const shareDocId = userSnap.data().shareRef
-            
+
             const shareRef = doc(db, 'share', userDoc.shareRef)
             await updateDoc(shareRef, {
                 uid: data.uid,
                 shared: arrayUnion(data.postId)
-                
+
             })
 
             dispatch(shareSuccess(userDoc.shareRef))
@@ -104,6 +136,30 @@ export const removeShared = (data) => {
         } catch (error) {
             console.log(error)
             dispatch(removeSharedFailed())
+        }
+    }
+}
+
+
+export const getSavedPosts = (userSaved) => {
+    return async function (dispatch) {
+        dispatch(getSavedPostsStart())
+        try {
+            const postColRef = collection(db, 'posts')
+            const q = query(postColRef,
+                where('id', 'in', userSaved)
+
+            )
+            const snap =await getDocs(q);
+           const saved =  snap?.docs.map((doc)=>{
+                return doc.data()
+            })
+            console.log(saved)
+            dispatch(getSavedPostsSuccess(saved))
+        } catch (error) {
+            console.log(error)
+
+            dispatch(getSavedPostsFailed())
         }
     }
 }

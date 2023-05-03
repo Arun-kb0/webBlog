@@ -1,15 +1,17 @@
 
-import { IoPlayOutline } from "react-icons/io5";
 import {
     SHARE_START, SHARE_FAILED, SHARE_SUCCESS,
     REMOVE_SHARE_FAILED, REMOVE_SHARE_START, REMOVE_SHARE_SUCCESS,
-    GET_SHARE_FAILED, GET_SHARE_START, GET_SHARE_SUCCESS, 
+    GET_SHARE_FAILED, GET_SHARE_START, GET_SHARE_SUCCESS, GET_SAVED_START, GET_SAVED_SUCCESS, GET_SAVED_FAILED,
 } from "../../constants";
 
 const initialState = {
     loading: false,
     shared: null,
-    sharedRefId:null
+    sharedRefId: null,
+    savedPosts:null,
+    savedPostsSize:null
+
 }
 
 const shareReducer = (state = initialState, action) => {
@@ -60,10 +62,29 @@ const shareReducer = (state = initialState, action) => {
                 loading: false
             }
 
-        
+        case GET_SAVED_START:
+            console.log("GET_SAVED_START")
+            return {
+                ...state,
+                loading: true
+            }
+        case GET_SAVED_SUCCESS:
+            console.log("GET_SAVED_SUCCESS")
+            return {
+                ...state,
+                savedPosts:action.payload,
+                savedPostsSize: action.payload.length,
+                loading: false
+            }
+        case GET_SAVED_FAILED:
+            console.log("GET_SAVED_FAILED")
+            return {
+                ...state,
+                loading: false
+            }
 
-        default :
-            return{
+        default:
+            return {
                 ...state
             }
 

@@ -6,7 +6,7 @@ import { commentPost, getComments, deleteComment } from '../../features/redux/fi
 import { doc } from 'firebase/firestore'
 
 // import { IoTrashBinOutline } from 'react-icons/io5'
-import{IoTrashBinOutline} from '../../imports/reactIcons'
+import { IoTrashBinOutline } from '../../imports/reactIcons'
 
 const CommentBox = (props) => {
 
@@ -69,7 +69,8 @@ const CommentList = (props) => {
 
                 <i onClick={() => handleDelete(comment)}
                   className=''
-                ><IoTrashBinOutline size='20' />
+                >
+                  <IoTrashBinOutline size='20' />
                 </i>
               </div>
             }

@@ -26,16 +26,17 @@ function CreatePost() {
     const data = {
       docName: "posts",
       doc: {
+        id:null,
         title,
         postText,
         hashtags: hashtagsArray,
         author: {
           name: currentUser.user.displayName,
           id: currentUser.user.uid,
-          timeStamp: new Date().toUTCString()
         },
         commentRef: null,
         likesRef: null,
+        timeStamp: null
 
       }
     }

@@ -17,7 +17,7 @@ function FollowUsers() {
         userCardContainer: "user-card-container",
         userCard: "user-card",
         userCardProfileContainer: "user-card-profile-container",
-        profilePic: "profile-pic",
+        profilePic: "userCard-profilePic ",
         userCardElements: "user-card-elements",
         userCardUserName: "user-card-username mx-3",
     }
@@ -41,6 +41,7 @@ function FollowUsers() {
                         <UserCard
                             username={user.name}
                             uid={user.userId}
+                            photoURL={user?.photoURL}
                             followColId={userDoc.followRef}
                             currentUserId = {userDoc.userId}
                             currentUserName={userDoc.name}

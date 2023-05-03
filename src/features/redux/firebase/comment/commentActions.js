@@ -4,10 +4,6 @@ import {
 } from "../../constants";
 
 import { db } from "../../../../firebase-config";
-// import {
-//     collection, doc, updateDoc, arrayUnion, onSnapshot, arrayRemove,
-// } from "firebase/firestore";
-
 import {
     collection, doc, updateDoc, arrayUnion, onSnapshot, arrayRemove,
 } from '../../../../imports/firebaseFunctions'

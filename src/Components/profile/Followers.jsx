@@ -2,6 +2,8 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {getFollowersList} from '../../features/redux/firebase/follow/followActions'
 import UserCard from '../followUsers/UserCard'
+
+
 function Followers() {
   const dispatch = useDispatch()
     const {userDoc , isAuth} = useSelector(state => state.user)
@@ -12,7 +14,7 @@ function Followers() {
       userCardContainer: "user-card-container",
       userCard: "user-card",
       userCardProfileContainer: "user-card-profile-container",
-      profilePic: "profile-pic",
+      profilePic: "userCard-profilePic",
       userCardElements: "user-card-elements",
       userCardUserName: "user-card-username mx-3",
   }
@@ -36,6 +38,7 @@ function Followers() {
           <UserCard 
             key={user?.uid}
             username={user?.username}
+            photoURL={user?.photoURL}
             uid={user?.uid}
             followColId={userDoc.followRef}
             styles={styles}

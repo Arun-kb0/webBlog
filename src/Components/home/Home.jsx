@@ -84,7 +84,7 @@ function Home(props) {
                   <div className='flex justify-end'>
 
                     {
-                      isAuth && post.author.id === currentUser.user.uid &&
+                      isAuth && post.author.id === currentUser?.user.uid &&
                       <Delete
                         isAuth={isAuth}
                         postId={post.postId}

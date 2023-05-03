@@ -153,19 +153,21 @@ export const getUsers = (userDoc) => {
 
 
 // * follow async 
-export const followUser = ({ username, uid, followColId, currentUserId, currentUserName }) => {
+export const followUser = (data) => {
     return async function (dispatch) {
 
-        dispatch(followUserStart())
-        console.log(followColId)
+        const { username, uid, photoURL, followColId, currentUserId, currentUserName } = data
+        console.log(data)
 
+        dispatch(followUserStart())
         try {
             const followRef = doc(db, 'follow', followColId)
             await updateDoc(followRef, {
-                following: arrayUnion({ uid, username }),
+                following: arrayUnion({ uid, username, photoURL: photoURL ? photoURL : null }),
                 ownerId: currentUserId,
                 ownerName: currentUserName
             })
+
             const res = await getDoc(followRef)
             const followDoc = res.data()
             console.log(followDoc.following)

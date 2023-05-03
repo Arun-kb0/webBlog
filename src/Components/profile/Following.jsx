@@ -14,7 +14,7 @@ function Following() {
     userCardContainer: "user-card-container",
     userCard: "user-card",
     userCardProfileContainer: "user-card-profile-container",
-    profilePic: "profile-pic",
+    profilePic: "userCard-profilePic",
     userCardElements: "user-card-elements",
     userCardUserName: "user-card-username mx-3",
   }
@@ -43,14 +43,17 @@ function Following() {
 
         {
           followList?.map((user) => (
-
+            
             <UserCard 
               key={user?.uid}
               username={user?.username}
+              photoURL={user?.photoURL}
               uid={user?.uid}
               followColId={userDoc.followRef}
               currentUserId={userDoc.userId}
               styles={styles}
+              
+
             />
           ))
         }

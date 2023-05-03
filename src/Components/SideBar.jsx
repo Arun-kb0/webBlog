@@ -5,15 +5,9 @@ import { userLogout } from '../features/redux/firebase/auth/authAction'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
-
-
-// import { AiFillHome } from 'react-icons/ai'
-// import { BiMessageSquareAdd, BiLogOut, BiLogIn } from 'react-icons/bi'
-// import { FaHashtag, FaUserCircle } from 'react-icons/fa'
-
 import {AiFillHome,IoPersonRemove,IoPersonAdd,
     BiMessageSquareAdd, BiLogOut, BiLogIn,
-    FaHashtag, FaUserCircle
+    FaHashtag, FaUserCircle,BsChatDotsFill
 } from '../imports/reactIcons'
 
 function SideBar() {
@@ -38,6 +32,12 @@ function SideBar() {
                 <i >
                     <Link to="/createpost">
                         <SideBarIcon icon={<BiMessageSquareAdd size='28' />} text='add post' />
+                    </Link>
+                </i>
+
+                <i >
+                    <Link to="/chat">
+                        <SideBarIcon icon={<BsChatDotsFill size='28' />} text='chat' />
                     </Link>
                 </i>
 
@@ -83,6 +83,6 @@ const SideBarIcon = ({ icon, text = 'tooltip' }) => (
     </div>
 )
 
-const Divider = () => <hr className='sidebar-hr' />
+export const Divider = () => <hr className='sidebar-hr' />
 
 export default SideBar

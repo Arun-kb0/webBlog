@@ -7,16 +7,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { registerInitiate } from '../features/redux/firebase/auth/authAction'
 import space from '../assets/space.png'
 import signupImage from '../assets/signupImage.webp'
+
+import {FcAddImage  } from 'react-icons/fc'
 function SignUp() {
 
-  
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  
+
   const { currentUser, isAuth } = useSelector((store) => {
     return store.user
   })
-  
+
   const { register, handleSubmit, formState: { errors } } = useForm()
 
 
@@ -102,6 +104,9 @@ function SignUp() {
               />
               {errors.Password && <p className='form-error mt-0'>Enter a valid Password</p>}
             </div>
+
+            
+            
 
             <button className='dark:btn light-btn' onClick={handleSubmit(onsubmit)}
             > Submit</button>

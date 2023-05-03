@@ -2,6 +2,7 @@ import { SEARCH_START, SEARCH_SUCCESS, SEARCH_FAILED } from "../../constants";
 
 import { db } from "../../../../firebase-config";
 import { query, collection, where, getDocs } from '../../../../imports/firebaseFunctions'
+import { QueryEndAtConstraint, endAt, orderBy, startAt } from "firebase/firestore";
 
 const searchStart = () => {
     return {
@@ -45,7 +46,7 @@ export const search = (searchTerm) => {
             let snap = null;
             let searchData = null;
             let colName = null
-            let matchDocs=[]
+            let matchDocs = []
 
             for (const collectionName of Object.keys(collectionNames)) {
                 const fields = collectionNames[collectionName];
@@ -54,9 +55,14 @@ export const search = (searchTerm) => {
                     let q = null
                     const postRef = collection(db, collectionName);
                     if (field === 'hashtags') {
-                        q = query(postRef, where(field, 'array-contains', searchTerm));
+                        q = query(postRef,
+                            where(field, 'array-contains', searchTerm),
+                        );
                     } else {
-                        q = query(postRef, where(field, '==', searchTerm));
+                        q = query(postRef,
+                            where(field, '>=', searchTerm),
+                            where(field, '<=', searchTerm + "\uf8ff"),
+                        );
                     }
                     const querySnap = await getDocs(q);
                     console.warn(querySnap.empty, q);
@@ -71,9 +77,9 @@ export const search = (searchTerm) => {
                 }
             }
 
-            // console.warn(snap?.docs);
+            console.warn(snap?.docs);
             console.warn(matchDocs)
-          
+
 
             if (snap) {
 
@@ -84,18 +90,7 @@ export const search = (searchTerm) => {
             console.warn(searchData);
             console.warn(colName)
 
-            // const colName = 'posts'
-            // const postRef = collection(db, colName)
-            // const q = query(postRef,
-            //     where('hashtags', 'array-contains', searchTerm)
-            // )
-            // console.warn(q)
-            // const querySnap = await getDocs(q)
-            // const searchData = querySnap.docs.map((doc) => {
-            //     // console.log(doc.id, '=>' , doc.data() )
-            //     return { ...doc.data(), postId: doc.id }
-            // })
-            // console.warn(searchData)
+
             dispatch(searchSuccess({ searchData, collectionName: colName }));
 
         } catch (error) {

@@ -7,15 +7,11 @@ import {
 } from "../../constants";
 import { auth, db } from "../../../../firebase-config";
 
-// import {
-//     collection, getDocs, doc, updateDoc,
-//     arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove,
-// } from "firebase/firestore";
-
 import {
-    collection, getDocs, doc, updateDoc,
-    arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove,
+    collection, getDocs, doc, updateDoc,serverTimestamp, 
+    arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove, query,orderBy
 } from '../../../../imports/firebaseFunctions'
+import { onSnapshot } from "firebase/firestore";
 
 // * get post
 const getPostStart = () => {
@@ -136,7 +132,8 @@ export const getPost = () => {
 
         try {
             const postCollectionRef = collection(db, "posts")
-            const data = await getDocs(postCollectionRef)
+            const q = query(postCollectionRef,orderBy('timeStamp','desc'))
+            const data = await getDocs(q)
 
             // * calling users firestore
             let userData = null;
@@ -239,10 +236,19 @@ export const addPost = (data) => {
             // const shareDoc = await addDoc(shareRef,{})
             // const shareSnap = await getDoc(shareDoc)
             // data.doc.shareRef = shareSnap.id
+            
+            data.doc.timeStamp  = serverTimestamp()
+            const collectionRef = collection(db, data.docName) 
+            const postData = await addDoc(collectionRef, data.doc)
 
+            console.warn(postData.id)
+            const docRef = doc(db,'posts' , postData.id)
+            const res = await updateDoc(docRef , {
+                id:`${postData.id}`
+            })
 
-            const collectionRef = collection(db, data.docName)
-            const res = await addDoc(collectionRef, data.doc)
+            
+
             console.log(res)
             dispatch(addPostSuccess())
         } catch (error) {

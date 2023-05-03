@@ -1,16 +1,19 @@
 import {
     REGISTER_START, REGISTER_SUCCESS, REGISTER_FAILED,
     LOGIN_START, LOGIN_FAILED, LOGIN_SUCCESS,
-    LOGOUT_START, LOGOUT_SUCCESS, LOGOUT_FAILED
+    LOGOUT_START, LOGOUT_SUCCESS, LOGOUT_FAILED,
+    SET_USER_START, SET_USER_FAILED, SET_USER_SUCCESS,
+    UPLOAD_PROFILE_PIC_START, UPLOAD_PROFILE_PIC_SUCCESS, UPLOAD_PROFILE_PIC_FAILED,
 } from '../../constants'
 
-
-
-import { auth, db } from '../../../../firebase-config'
+import { auth, db, storage } from '../../../../firebase-config'
 import {
-    createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword, signOut,
-    doc, setDoc, getDoc, collection,addDoc
+    createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword,
+    signOut, doc, setDoc, getDoc, collection, addDoc, updateDoc
 } from '../../../../imports/firebaseFunctions'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { current } from '@reduxjs/toolkit'
+
 
 
 
@@ -90,6 +93,54 @@ const logoutFalied = (error) => {
 }
 
 
+// * setUser
+const setUserStart = () => {
+    return {
+        type: SET_USER_START,
+
+    }
+}
+
+const setUserSuccess = (data) => {
+    return {
+        type: SET_USER_SUCCESS,
+        payload: data
+    }
+}
+
+const setUserFailed = (error) => {
+    return {
+        type: SET_USER_FAILED,
+        payload: error
+    }
+}
+
+
+const uploadProfilePicStart = () => {
+    return {
+        type: UPLOAD_PROFILE_PIC_START
+    }
+}
+
+
+const uploadProfilePicSuccess = (userDoc) => {
+    return {
+        type: UPLOAD_PROFILE_PIC_SUCCESS,
+        payload:userDoc
+    }
+}
+
+
+const uploadProfilePicFailed = (error) => {
+    return {
+        type: UPLOAD_PROFILE_PIC_FAILED,
+        payload:error
+    }
+}
+
+
+
+
 
 // * async operations 
 
@@ -100,38 +151,41 @@ export const registerInitiate = (Email, Password, displayName) => {
         // console.log("registerInitiate called ")
         dispatch(registerStart())
         try {
-
-
-
             const res = await createUserWithEmailAndPassword(auth, Email, Password)
             updateProfile(auth.currentUser, { displayName })
             localStorage.setItem("isAuth", true)
 
             //* creating user collection firestore  
-            const userCollectionRef = doc(db, "users", auth.currentUser.uid)
-
             const shareRef = collection(db, 'share')
             const shareDoc = await addDoc(shareRef, {})
             const shareSnap = await getDoc(shareDoc)
 
-            const followRef = collection(db,'follow')
-            const followDoc = await addDoc(followRef,{})
+            const followRef = collection(db, 'follow')
+            const followDoc = await addDoc(followRef, {})
             const followSnap = await getDoc(followDoc)
 
-            const userDoc =await setDoc(userCollectionRef, {
+            const userChatDoc = doc(db, "userChats", auth.currentUser.uid)
+            await setDoc(userChatDoc, {})
+
+            const userDocRef = doc(db, "users", auth.currentUser.uid)
+            await setDoc(userDocRef, {
                 name: displayName,
                 userId: auth.currentUser.uid,
                 savedPosts: [],
                 shareRef: shareSnap.id,
-                followRef:followSnap.id
+                followRef: followSnap.id,
             })
 
-            console.log(userDoc)
-            dispatch(registerSuccess(res))
+            const userDoc = await getDoc(userDocRef)
+
+            console.warn(userDoc)
+            console.warn(res)
+            dispatch(registerSuccess({ res, userDoc: userDoc.data() }))
+
 
 
         } catch (error) {
-            console.log(error)
+            console.error(error)
             dispatch(registerFaild(error.message))
         }
     }
@@ -145,13 +199,13 @@ export const userLogin = (data) => {
         dispatch(loginStart())
         try {
             const currentUser = await signInWithEmailAndPassword(auth, data.Email, data.Password)
-            console.log(currentUser)
+            console.warn(currentUser)
             localStorage.setItem("isAuth", true)
 
             const userRef = doc(db, "users", auth.currentUser.uid)
             const userDoc = await getDoc(userRef)
 
-            dispatch(loginSuccess({currentUser,userDoc:userDoc.data()}))
+            dispatch(loginSuccess({ currentUser, userDoc: userDoc.data() }))
         } catch (erorr) {
             console.log(erorr)
             dispatch(loginFailed(erorr))
@@ -174,6 +228,81 @@ export const userLogout = () => {
         } catch (error) {
             console.log(error)
             dispatch(logoutFalied(error))
+        }
+    }
+}
+
+// * upload image async
+export const uploadProfilePic = (file) => {
+    return async function (dispatch) {
+        dispatch(uploadProfilePicStart())
+
+        try {
+            const storageRef = ref(storage, auth.currentUser.uid)
+            const uploadTask = uploadBytesResumable(storageRef, file)
+
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                        case 'paused':
+                            console.log('Upload is paused');
+                            break;
+                        case 'running':
+                            console.log('Upload is running');
+                            break;
+                    }
+                },
+                (error) => {
+                    console.log(error)
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref)
+                        .then(async (downloadURL) => {
+                            console.log('File available at', downloadURL);
+                            const userDocRef = doc(db, "users", auth.currentUser.uid)
+                            await updateDoc(userDocRef, {
+                                photoURL: downloadURL
+                            })
+                            // ! check chat actions for photoURL in currentUser
+                            await updateProfile(auth.currentUser, {
+                                photoURL: downloadURL
+                            })
+
+                            const userDoc = await getDoc(userDocRef)
+                            dispatch(uploadProfilePicSuccess(userDoc))
+                        });
+                }
+            );
+
+            // dispatch(uploadProfilePicSuccess())
+        } catch (error) {
+            console.error(error)
+            dispatch(uploadProfilePicFailed(error))
+        }
+    }
+}
+
+
+export const setUser = (user) => {
+    return async function (dispatch) {
+        console.warn("login check")
+        console.warn(user)
+        dispatch(setUserStart())
+        try {
+            if (user) {
+                const userRef = doc(db, "users", user?.uid)
+                const userDoc = await getDoc(userRef)
+                const currentUser = { user: user }
+                dispatch(setUserSuccess({ currentUser, userDoc: userDoc.data() }))
+            } else {
+                dispatch(setUserSuccess({ currentUser: null, userDoc: null }))
+            }
+        } catch (erorr) {
+            console.log(erorr)
+            dispatch(setUserFailed(erorr))
         }
     }
 }

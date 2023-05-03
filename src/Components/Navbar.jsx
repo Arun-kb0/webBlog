@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { userLogout } from '../features/redux/firebase/auth/authAction'
-import { search } from '../features/redux/firebase/elasticSearch/SearchActions'
+import { search } from '../features/redux/firebase/search/searchActions'
 
 import UseDarkMode from '../hooks/UseDarkMode'
 
 import {
-  FaSearch, FaHashtag, BiLogIn, BiLogOut, HiMenuAlt1, IoClose, FaSun, FaMoon
+  FaSearch, FaHashtag, BiLogIn, BiLogOut, HiMenuAlt1,
+  IoClose, FaSun, FaMoon, BsChatDotsFill
 } from '../imports/reactIcons'
 
 
@@ -31,7 +32,7 @@ function Navbar(props) {
         {viewSideBar ? <HambergerMenu /> : <CloseHamMenu />}</i>
       <Title />
       <ThemeIcon />
-      <HashtagIcon />
+      <SuperChatBtn />
       <Search />
       {
         isAuth ? <LogoutIcon /> :
@@ -60,21 +61,30 @@ const ThemeIcon = () => {
 
 
 // * search
-const Search = () => {
+export const Search = (props) => {
+  const { styles = '' } = props
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [searchString, setsearchString] = useState('')
+
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 13)
+      handleSearch()
+  }
+
+
   const handleSearch = (e) => {
-    e.preventDefault()
+    // e.preventDefault()
     console.log("handleSearch")
     dispatch(search(searchString))
     navigate('/search')
   }
 
   return (
-    <div className='search'>
+    <div className={`search ${styles.search && styles.search}`}>
       <input
         onChange={(e) => setsearchString(e.target.value)}
+        onKeyDown={handleKeyDown}
         className='search-input'
         type='text'
         placeholder='Search...'
@@ -93,7 +103,7 @@ const Search = () => {
 const LogoutIcon = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const {following,followingSize} = useSelector(state=> state.followReducer)
+  const { following, followingSize } = useSelector(state => state.followReducer)
 
   const signUserOut = () => {
     dispatch(userLogout())
@@ -105,9 +115,9 @@ const LogoutIcon = () => {
 }
 
 const LoginIcon = () => <BiLogIn size='24' className='top-navigation-icon ' />
-const HashtagIcon = () => <FaHashtag size='24' className='top-navigation-icon' />
 const Title = () => <h5 className='title-text'>Dev Bloger</h5>
 const HambergerMenu = () => <HiMenuAlt1 className='top-navigation-icon ml-4' size='28' />
 const CloseHamMenu = () => <IoClose className='top-navigation-icon ml-4' size='28' />
+const SuperChatBtn = () => <BsChatDotsFill className='top-navigation-icon' size='24' />
 
 export default Navbar
