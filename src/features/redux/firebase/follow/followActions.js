@@ -9,7 +9,7 @@ import {
 import { db } from "../../../../firebase-config";
 import {
     getDocs, arrayUnion, doc, updateDoc, collection,
-    query, where, getDoc, arrayRemove, onSnapshot
+    query, where, getDoc, arrayRemove,
 } from "../../../../imports/firebaseFunctions";
 
 

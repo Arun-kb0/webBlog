@@ -9,10 +9,9 @@ import {
 import { auth, db, storage } from '../../../../firebase-config'
 import {
     createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword,
-    signOut, doc, setDoc, getDoc, collection, addDoc, updateDoc
+    signOut, doc, setDoc, getDoc, collection, addDoc, updateDoc,
+    getDownloadURL, ref, uploadBytesResumable
 } from '../../../../imports/firebaseFunctions'
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { current } from '@reduxjs/toolkit'
 
 
 
@@ -126,7 +125,7 @@ const uploadProfilePicStart = () => {
 const uploadProfilePicSuccess = (userDoc) => {
     return {
         type: UPLOAD_PROFILE_PIC_SUCCESS,
-        payload:userDoc
+        payload: userDoc
     }
 }
 
@@ -134,7 +133,7 @@ const uploadProfilePicSuccess = (userDoc) => {
 const uploadProfilePicFailed = (error) => {
     return {
         type: UPLOAD_PROFILE_PIC_FAILED,
-        payload:error
+        payload: error
     }
 }
 
@@ -233,12 +232,12 @@ export const userLogout = () => {
 }
 
 // * upload image async
-export const uploadProfilePic = (file) => {
+export const uploadProfilePic = ({ file, filename }) => {
     return async function (dispatch) {
         dispatch(uploadProfilePicStart())
 
         try {
-            const storageRef = ref(storage, auth.currentUser.uid)
+            const storageRef = ref(storage, auth.currentUser.uid + filename)
             const uploadTask = uploadBytesResumable(storageRef, file)
 
 
@@ -263,16 +262,27 @@ export const uploadProfilePic = (file) => {
                         .then(async (downloadURL) => {
                             console.log('File available at', downloadURL);
                             const userDocRef = doc(db, "users", auth.currentUser.uid)
-                            await updateDoc(userDocRef, {
-                                photoURL: downloadURL
-                            })
-                            // ! check chat actions for photoURL in currentUser
-                            await updateProfile(auth.currentUser, {
-                                photoURL: downloadURL
-                            })
 
-                            const userDoc = await getDoc(userDocRef)
-                            dispatch(uploadProfilePicSuccess(userDoc))
+                            let userDoc
+                            if (filename.length === 0) {
+                                await updateDoc(userDocRef, {
+                                    photoURL: downloadURL
+                                })
+                                await updateProfile(auth.currentUser, {
+                                    photoURL: downloadURL
+                                })
+
+                                userDoc = await getDoc(userDocRef)
+                            }else{
+                                await updateDoc(userDocRef, {
+                                    coverPhotoURL: downloadURL
+                                })
+
+                                userDoc = await getDoc(userDocRef)
+                            }
+
+                            console.log(userDoc.data())
+                            dispatch(uploadProfilePicSuccess(userDoc.data()))
                         });
                 }
             );

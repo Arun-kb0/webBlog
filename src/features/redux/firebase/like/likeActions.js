@@ -3,17 +3,12 @@ import {
     LIKE_POST_START, LIKE_POST_SUCCESS, LIKE_POST_FAILED,
     REMOVE_LIKED_POST_FAILED, REMOVE_LIKED_POST_SUCCESS, REMOVE_LIKED_POST_START
 } from "../../constants";
-import { db ,auth} from "../../../../firebase-config";
-
-// import {
-//     collection, getDocs, doc, updateDoc,
-//     arrayUnion, getDoc, arrayRemove,increment,
-// } from "firebase/firestore";
-
+import { db, auth } from "../../../../firebase-config";
 
 import {
-    collection, getDocs, doc, updateDoc,
-    arrayUnion, getDoc, arrayRemove,increment,
+    collection, getDocs, doc, updateDoc,writeBatch,
+    arrayUnion, getDoc, arrayRemove, increment,
+
 } from '../../../../imports/firebaseFunctions'
 
 // * like post
@@ -89,21 +84,20 @@ export const likePost = ({ id, likeId }) => {
         dispatch(likePostStart())
 
         try {
+         
             const likeRef = doc(db, 'likes', likeId)
-            await updateDoc(likeRef, {
+            const postRef = doc(db, 'posts', id)
+            const batch = writeBatch(db)
+            batch.update(likeRef, {
                 postId: id,
                 liked: arrayUnion(`${auth.currentUser.uid}`)
             })
-
-            const postRef = doc(db, 'posts', id)
-            await updateDoc(postRef, {
+            batch.update(postRef, {
                 likeCount: increment(1)
             })
-
-            const res = await getDoc(likeRef)
-
-            console.warn(res.data())
-            dispatch(likePostSuccess(res.data()))
+            await batch.commit()
+            console.log('Batch write successful');
+            dispatch(likePostSuccess())
 
         } catch (error) {
             console.log(error)
@@ -123,21 +117,20 @@ export const removeLiked = ({ id, likeId }) => {
         dispatch(removeLikdePostStart())
 
         try {
-           
             const likeRef = doc(db, 'likes', likeId)
-            const unionRes = await updateDoc(likeRef, {
+            const postRef = doc(db, 'posts', id)
+            const batch = writeBatch(db)
+            batch.update(likeRef, {
                 liked: arrayRemove(`${auth.currentUser.uid}`)
             })
-
-            const postRef = doc(db, 'posts', id)
-            await updateDoc(postRef, {
+            batch.update(postRef, {
                 likeCount: increment(-1)
             })
+            await batch.commit()
+            console.log('Batch write successful');
+            dispatch(removeLikdePostSuccess())
 
-            const res = await getDoc(likeRef)
-
-            console.warn(unionRes)
-            dispatch(removeLikdePostSuccess(res.data()))
+            // dispatch(removeLikdePostSuccess(res.data()))
         } catch (error) {
             console.log(error)
             dispatch(removeLikdePostFailed(error))

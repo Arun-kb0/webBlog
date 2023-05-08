@@ -75,15 +75,23 @@ export const Search = (props) => {
 
   const handleSearch = (e) => {
     // e.preventDefault()
-    console.log("handleSearch")
-    dispatch(search(searchString))
-    navigate('/search')
+    if (searchString.length > 0) {
+      console.log("handleSearch")
+      dispatch(search(searchString))
+      navigate('/search')
+    } else {
+      navigate('/')
+    }
+  }
+
+  const handleChange = (e) => {
+    setsearchString(e.target.value)
   }
 
   return (
     <div className={`search ${styles.search && styles.search}`}>
       <input
-        onChange={(e) => setsearchString(e.target.value)}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
         className='search-input'
         type='text'

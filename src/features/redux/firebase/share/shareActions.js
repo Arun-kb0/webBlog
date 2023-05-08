@@ -8,9 +8,13 @@ import {
 import { db } from "../../../../firebase-config";
 import {
     doc, arrayUnion, getDoc, updateDoc, arrayRemove,
-    getDocs
+    getDocs, collection, query, where
 } from "../../../../imports/firebaseFunctions";
-import { collection, query, where } from "firebase/firestore";
+import shareReducer from "./shareReducer";
+import { data } from "autoprefixer";
+import { addDoc, serverTimestamp, writeBatch } from "firebase/firestore";
+
+// import { collection, query, where } from "firebase/firestore";
 
 // import { doc, arrayUnion, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
 
@@ -24,10 +28,9 @@ const shareStart = () => {
     }
 }
 
-const shareSuccess = (data) => {
+const shareSuccess = () => {
     return {
         type: SHARE_SUCCESS,
-        payload: data
     }
 }
 
@@ -39,31 +42,27 @@ const shareFailed = (error) => {
 }
 
 
-// * remove shared
-const removeSharedStart = () => {
+// *get shared
+const getSharedStart = () => {
     return {
-        type: REMOVE_SHARE_START
+        type: GET_SHARE_START
     }
 }
-
-const removeSharedSuccess = (data) => {
+const getSharedSuccess = (shared) => {
     return {
-        type: REMOVE_SHARE_SUCCESS,
-        payload: data
+        type: GET_SHARE_SUCCESS,
+        payload: shared
     }
 }
-
-const removeSharedFailed = (error) => {
+const getSharedFailed = (error) => {
     return {
-        type: REMOVE_SHARE_FAILED,
+        type: GET_SHARE_FAILED,
         payload: error
     }
 }
 
 
-
 // * get saved 
-
 const getSavedPostsStart = () => {
     return {
         type: GET_SAVED_START
@@ -75,7 +74,7 @@ const getSavedPostsStart = () => {
 const getSavedPostsSuccess = (saved) => {
     return {
         type: GET_SAVED_SUCCESS,
-        payload:saved
+        payload: saved
 
     }
 }
@@ -88,54 +87,88 @@ const getSavedPostsFailed = () => {
     }
 }
 
-// ! not completed 
-// ! complete after mesgaeing setup 
-
-export const sharePost = ({ data, userDoc }) => {
+export const sharePost = ({ post, userDoc }) => {
     return async function (dispatch) {
         dispatch(shareStart())
-
+        // console.log(post)
         try {
-            // const userRef = doc(db, 'users', data.uid)
-            // const userSnap = await getDoc(userRef)
-            // console.warn(userSnap.data().shareRef)
-            // const shareDocId = userSnap.data().shareRef
 
-            const shareRef = doc(db, 'share', userDoc.shareRef)
-            await updateDoc(shareRef, {
-                uid: data.uid,
-                shared: arrayUnion(data.postId)
+            const commentRef = collection(db, 'comments')
+            const likeRef = collection(db, 'likes')
+            const commentDoc = await addDoc(commentRef, {})
+            const likeDoc = await addDoc(likeRef, {})
+            console.log(commentDoc.id, likeDoc.id)
 
+            const postRef = collection(db, 'posts')
+            let postData
+            if (!post.shared) {
+                postData = await addDoc(postRef, {
+                    ...post,
+                    timeStamp: serverTimestamp(),
+                    commentRef: commentDoc.id,
+                    likesRef: likeDoc.id,
+                    likeCount: 0,
+                    shared: {
+                        originId: post.postId,
+                        sharedBy: userDoc.userId,
+                        shareUser: userDoc.name
+                    }
+                })
+            } else {
+                postData = await addDoc(postRef, {
+                    ...post,
+                    timeStamp: serverTimestamp(),
+                    commentRef: commentDoc.id,
+                    likesRef: likeDoc.id,
+                    likeCount: 0,
+                    shared: {
+                        originId: post.shared.originId,
+                        sharedBy: userDoc.userId,
+                        shareUser: userDoc.name
+                    }
+                })
+            }
+            console.log(postData)
+            const docRef = doc(db, 'posts', postData.id)
+            await updateDoc(docRef, {
+                id: `${postData.id}`
             })
 
-            dispatch(shareSuccess(userDoc.shareRef))
+
+
+            console.warn("share successfull! ")
+
+            dispatch(shareSuccess())
 
         } catch (error) {
-            console.log(error)
+            console.error(error)
             dispatch(shareFailed(error))
         }
     }
 }
 
-
-export const removeShared = (data) => {
+// *get shared
+export const getShared = (uid) => {
     return async function (dispatch) {
-        dispatch(removeSharedStart())
-        try {
-            console.warn(data)
-            const userRef = doc(db, 'users', data.uid)
-            const userSnap = await getDoc(userRef)
-            console.warn(userSnap.data().shareRef)
-            const shareDocId = userSnap.data().shareRef
-            const shareRef = doc(db, 'share', shareDocId)
-            await updateDoc(shareRef, {
-                shared: arrayRemove(data.postId)
-            })
+        dispatch(getSharedStart())
+        console.log(uid)
 
-            dispatch(removeSharedSuccess())
+        try {
+            const postRef = collection(db, 'posts')
+            const q = query(postRef,
+                where('shared.sharedBy', '==', uid)
+            )
+            const snap = await getDocs(q)
+            console.log(q)
+            const posts = snap.docs?.map(post=>{
+                return post.data()
+            }) 
+            console.log(posts)
+
+            dispatch(getSharedSuccess(posts))
         } catch (error) {
-            console.log(error)
-            dispatch(removeSharedFailed())
+            console.error(error)
+            dispatch(getSharedFailed(error))
         }
     }
 }
@@ -150,8 +183,8 @@ export const getSavedPosts = (userSaved) => {
                 where('id', 'in', userSaved)
 
             )
-            const snap =await getDocs(q);
-           const saved =  snap?.docs.map((doc)=>{
+            const snap = await getDocs(q);
+            const saved = snap?.docs.map((doc) => {
                 return doc.data()
             })
             console.log(saved)

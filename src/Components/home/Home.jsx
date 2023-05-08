@@ -1,4 +1,4 @@
-import React, { useEffect, useState, lazy, Suspense } from 'react'
+import React, { useEffect, useState, } from 'react'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -7,8 +7,8 @@ import {
   getPost, savePost, deletePost, removeSaved,
 } from '../../features/redux/firebase/fireStore/firestoreActions'
 
-import { likePost, getLiked, removeLiked } from '../../features/redux/firebase/like/likeActions'
-import { removeShared, sharePost } from '../../features/redux/firebase/share/shareActions'
+import { likePost, removeLiked } from '../../features/redux/firebase/like/likeActions'
+import { sharePost } from '../../features/redux/firebase/share/shareActions'
 import { getHashtagPosts } from '../../features/redux/firebase/hashtag/hashtagActions'
 
 import CommentBox from './CommentBox'
@@ -41,7 +41,7 @@ function Home(props) {
       return store.firestoreDB
     })
 
-  const { isAuth, currentUser,userDoc } = useSelector((store) => {
+  const { isAuth, currentUser, userDoc } = useSelector((store) => {
     return store.user
   })
 
@@ -57,8 +57,7 @@ function Home(props) {
     }
 
   }, [props.postChangeBit, props.tagPostChange,
-  props.isProfilePost, props.searchChange])
-
+  props.isProfilePost, props.searchChange,])
 
   const handleCommentBox = (id) => {
     setOpenCommentBox(!OpenCommentBox)
@@ -68,30 +67,45 @@ function Home(props) {
   return (
 
     <section className={props.styles.home} >
-      <Suspense fallback={<div>loading.......</div>}>
+      {
+        !postLists && <HomePageLoad />
+      }
+
+      <div className={props.styles.PostsContainers}>
         {
-          !postLists && <HomePageLoad />
-        }
+          postLists &&
+          postLists.map((post) => {
 
-        <div className={props.styles.PostsContainers}>
-          {
-            postLists &&
-            postLists.map((post) => {
+            return <div id="postContainer" key={post.postId}>
 
-              return <div id="postContainer" key={post.postId}>
+              <div id="postHeader" className=''>
+                <div className='flex'>
 
-                <div id="postHeader" className=''>
-                  <div className='flex justify-end'>
+                  <div className='w-4/12'>
+                    {post.shared &&
+                      <div className='shareDetails '>
+                        <div className='shareDot'></div>
+                        <p className='shareText '>Shared by
+                          <span className='capitalize'> {post.shared?.shareUser}</span>
+                        </p>
+                      </div>
+                    }
+                  </div>
 
+                  <div className='flex justify-end w-8/12 '>
                     {
-                      isAuth && post.author.id === currentUser?.user.uid &&
-                      <Delete
-                        isAuth={isAuth}
-                        postId={post.postId}
-                        commentRef={post.commentRef}
-                        likesRef={post.likesRef}
-                        shareRef={post.shareRef}
-                      />
+                      isAuth && (post.author.id === currentUser?.user.uid ||
+                        post.shared?.sharedBy === currentUser?.user.uid)
+                      && (
+                        <Delete
+                          isAuth={isAuth}
+                          postId={post.postId}
+                          commentRef={post.commentRef}
+                          likesRef={post.likesRef}
+                          shareRef={post.shareRef}
+                        />
+                      )
+
                     }
 
                     <Save
@@ -102,61 +116,61 @@ function Home(props) {
 
                   </div>
 
-                  <div>
-                    <h1 className='postTitle'>{post.title}</h1>
-                  </div>
                 </div>
 
-                <div id="postTextContainer" className=' '>
-                  {post.postText}
+                <div>
+                  <h1 className='postTitle'>{post.title}</h1>
                 </div>
-                <Hashtags
-                  hashtags={post.hashtags}
-                />
-                <h3 className='mt-1 text-zinc-400'>@{post.author.name}</h3>
-
-
-                <div className='bottom-btns-container mt-3 flex flex-row'>
-                  <Like
-                    isAuth={isAuth}
-                    postId={post.postId}
-                    user={currentUser?.user}
-                    loading={loading}
-                    likeBit={likeBit}
-                    likesRef={post.likesRef}
-                    likes={likes}
-                    likeCount={post?.likeCount}
-                     />
-
-                  <button onClick={() => handleCommentBox(post.postId)}
-                    className='ml-3'>
-                    <CommentBtn />
-                  </button>
-                  <Share
-                    postId={post.postId}
-                    isAuth={isAuth}
-                    user={currentUser?.user}
-                    userDoc={userDoc}
-                  />
-                </div>
-
-                {
-                  OpenCommentBox && commentPostId === post.postId &&
-                  <CommentBox
-                    isAuth={isAuth}
-                    postId={commentPostId}
-                    user={currentUser?.user}
-                    isPostsChanged={isPostsChanged}
-                    commentRef={post.commentRef}
-                  />
-                }
-
               </div>
-            })
-          }
-        </div>
 
-      </Suspense>
+              <div id="postTextContainer" className=' '>
+                {post.postText}
+              </div>
+              <Hashtags
+                hashtags={post.hashtags}
+              />
+              <h3 className='mt-1 text-zinc-400 capitalize '>@{post.author.name}</h3>
+
+
+              <div className='bottom-btns-container mt-3 flex flex-row'>
+                <Like
+                  isAuth={isAuth}
+                  postId={post.postId}
+                  user={currentUser?.user}
+                  loading={loading}
+                  likeBit={likeBit}
+                  likesRef={post.likesRef}
+                  likes={likes}
+                  likeCount={post?.likeCount}
+                />
+
+                <button onClick={() => handleCommentBox(post.postId)}
+                  className='ml-3'>
+                  <CommentBtn />
+                </button>
+                <Share
+                  post={post}
+                  isAuth={isAuth}
+                  userDoc={userDoc}
+                />
+              </div>
+
+              {
+                OpenCommentBox && commentPostId === post.postId &&
+                <CommentBox
+                  isAuth={isAuth}
+                  postId={commentPostId}
+                  user={currentUser?.user}
+                  isPostsChanged={isPostsChanged}
+                  commentRef={post.commentRef}
+                />
+              }
+
+            </div>
+          })
+        }
+      </div>
+
     </section>
   )
 }
@@ -182,7 +196,6 @@ const Hashtags = (props) => {
     ))}
   </div>
 }
-
 
 
 // * like 
@@ -266,6 +279,7 @@ export const Save = (props) => {
   </button>
 }
 
+// *delete
 export const Delete = (props) => {
   const dispatch = useDispatch()
 
@@ -290,26 +304,15 @@ export const Delete = (props) => {
 export const CommentBtn = () => <FaRegComment size='22' id='bottomIcons' />
 
 // * share
-export const Share = (props) => {
+export const Share = ({ post, userDoc, isAuth }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
 
   const handelShare = () => {
-   
-
-    if (props.isAuth) {
+    if (isAuth) {
       console.log("shared")
-      console.warn(props.user)
-
-      const data = {
-        uid: props.user.uid,
-        postId: props.postId
-      }
-      dispatch(sharePost({data,userDoc:props.userDoc}))
-
-      dispatch(followUser({data,userDoc: props.userDoc}))
-      // dispatch(removeShared(data))
+      dispatch(sharePost({ post, userDoc }))
     } else {
       navigate('/login')
     }

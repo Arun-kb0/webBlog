@@ -11,7 +11,6 @@ import {
     collection, getDocs, doc, updateDoc,serverTimestamp, 
     arrayUnion, addDoc, deleteDoc, getDoc, arrayRemove, query,orderBy
 } from '../../../../imports/firebaseFunctions'
-import { onSnapshot } from "firebase/firestore";
 
 // * get post
 const getPostStart = () => {

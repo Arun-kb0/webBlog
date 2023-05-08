@@ -1,6 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;0,1000;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900;1,1000&display=swap');
 
 @tailwind base;
+
+ /* * ++++++++++++  scrollbar  ++++++++++++++++ */
+
+:root {
+  --primary: rgb(196, 193, 201);
+  --secondary: rgb(105, 128, 152);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--primary);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 15px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--primary);
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);
+  border-radius: 14px;
+  border: 3px solid var(--primary);
+}
+
+
+
 @tailwind components;
 @tailwind utilities;
 
@@ -15,6 +46,8 @@
   body{
     @apply top-0 mt-0 p-0 
   }
+
+
 
  /* * ++++++++++++  btn ++++++++++++++++ */
 
@@ -314,7 +347,7 @@ md:w-6/12
 }
 
 .PostsContainers{
-  @apply mt-28
+  @apply mt-28 
 }
 
 #postContainer{
@@ -332,12 +365,24 @@ md:w-6/12
 
 
 #postHeader{
-  @apply text-xl uppercase text-center font-semibold mb-4 
+  @apply text-center mb-4 
+}
+
+.shareDetails{
+  @apply flex items-center gap-2
+}
+
+.shareDot{
+  @apply w-2 h-2 bg-sky-400 rounded-full
+}
+.shareText{
+  @apply mt-1 dark:text-zinc-100 text-zinc-500 text-lg
 }
 
 .postTitle{
   @apply text-2xl font-extrabold text-transparent
    bg-clip-text dark:bg-stone-300 bg-stone-600
+   capitalize 
 }
 
 #topRowIcons{
@@ -473,6 +518,7 @@ bg-gray-100 dark:bg-gray-700
  rounded-xl
   overflow-hidden
  md:mx-64 sm:mx-8
+
 }
 
 
@@ -657,7 +703,9 @@ dark:bg-gray-800  bg-gray-300
 }
 
 .inbox{
-  @apply mt-20 flex bg-gray-800 rounded-xl 
+  @apply mt-20 flex  rounded-xl 
+  dark:bg-gray-800 bg-gray-200
+  
   overflow-hidden 
   h-[85vh]
   lg:w-10/12 
@@ -670,11 +718,14 @@ dark:bg-gray-800  bg-gray-300
 
 /* * ++++++++++++ ChatSidebar   ++++++++++++++++ */
 .ChatsSidebarContainer{
-  @apply  w-4/12 h-screen bg-gray-500
+  @apply  w-4/12 dark:bg-gray-500 bg-gray-400 
+  h-screen  
+
 }
 
 .ChatsSidebar{
-  @apply p-1
+  @apply p-1 lg:mx-5
+
 }
 
 
@@ -688,7 +739,7 @@ dark:bg-gray-800  bg-gray-300
 }
 
 .chats{
-  @apply flex-row justify-between
+  @apply flex-row justify-between 
 }
 
 
@@ -700,7 +751,10 @@ dark:bg-gray-800  bg-gray-300
 
 .messages{
   @apply px-3 overflow-y-scroll
-   h-[75vh] 
+
+  h-[71vh] 
+  /* max-h-[88vh] min-h-[90vh] */
+  /* max-h-[670px] min-h-[670px] */
 }
 
 
@@ -759,7 +813,7 @@ rounded-tr-xl rounded-br-xl  rounded-bl-xl
 
 .messageInput{
   @apply w-full border-none outline-none 
-  text-slate-800 text-lg
+  text-slate-800 text-lg 
 }
 
 .send{

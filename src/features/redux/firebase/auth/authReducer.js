@@ -102,7 +102,6 @@ const authReducer = (state = initialState, action) => {
 
             }
 
-
         case SET_USER_SUCCESS:
             console.log("SET_USER_SUCCESS")
             console.log(action.payload)

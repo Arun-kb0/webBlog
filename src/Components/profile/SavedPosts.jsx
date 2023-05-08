@@ -3,7 +3,7 @@ import Home from '../home/Home'
 import { useDispatch, useSelector } from 'react-redux'
 import { getSavedPosts } from '../../features/redux/firebase/share/shareActions'
 
-const SavedPosts = (props) => {
+const SavedPosts = () => {
   const  dispatch = useDispatch()
   const [savedChange, setSavedChange] = useState(false)
   const { userSaved } = useSelector(state => state.firestoreDB)

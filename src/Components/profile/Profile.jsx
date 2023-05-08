@@ -14,7 +14,9 @@ import Following from './Following'
 import Followers from './Followers'
 import SavedPosts from './SavedPosts'
 
-import {uploadProfilePic} from '../../features/redux/firebase/auth/authAction'
+import { uploadProfilePic } from '../../features/redux/firebase/auth/authAction'
+import Spinner from '../loadingAnimations/Spinner'
+import SharedPosts from './SharedPosts'
 
 function Profile() {
     const { isAuth, currentUser } = useSelector((store) => store.user)
@@ -30,6 +32,8 @@ function Profile() {
 
 
     const navigate = useNavigate()
+    const { userDoc, loading } = useSelector(state => state.user)
+
 
     useEffect(() => {
         console.log("profile useEffect")
@@ -75,14 +79,16 @@ function Profile() {
 
     return (
         <section className='profile-container '>
-
+            { loading && <div className='mt-24 flex justify-center absolute  w-full z-50 '>
+                <Spinner />
+            </div>}
 
             {isAuth &&
-                <div onLoad={hanldeUserPosts}>
+                <div onLoad={hanldeUserPosts} >
+
 
                     {
                         !viewComponents.componentName &&
-
                         <div>
                             <div onClick={() => setHamOpen(!hamOpen)}
                                 className='flex justify-end mr-10'
@@ -98,14 +104,22 @@ function Profile() {
                                 }
                             </div>
 
+
+
                             <div className='profile-header'>
-                                <CoverPic />
+
+                                <CoverPic
+                                    userDoc={userDoc}
+                                />
+
                                 <ProfilePic
-                                    photo={solo}
+                                    userDoc={userDoc}
                                 />
                             </div>
                         </div>
                     }
+
+
                     <UserButtons
                         currentUser={currentUser}
                         view={handleViewFollowers}
@@ -124,7 +138,7 @@ function Profile() {
                     {/* ! add components */}
                     {
                         viewComponents.componentName === 'shared' &&
-                        <UserPosts />
+                        <SharedPosts />
 
                     }
                     {
@@ -197,35 +211,58 @@ const ProfileHamMenu = ({ view }) => {
 }
 
 // * header components
-const CoverPic = () => (
-    <div className='cover-pic-container'>
-        <img className='cover-pic'
-            src={space} alt="cover picture" />
-        <i className='camera-icon cover-cam-position '>
-            <AiFillCamera size='28' />
-        </i>
-    </div>
-)
-
-export const ProfilePic = (props) => {
+// ! update home in profile insatntly
+const CoverPic = ({ userDoc, }) => {
     const dispatch = useDispatch()
-    const {userDoc} = useSelector(state=> state.user)
+
+
+    const handleFile = (e) => {
+        console.log("click")
+        const file = e.target.files[0]
+        console.log(file)
+        dispatch(uploadProfilePic({
+            file,
+            filename: 'coverpic'
+        }))
+
+    }
+
+    return (
+        <div className='cover-pic-container'>
+            <img className='cover-pic'
+                src={userDoc.coverPhotoURL
+                    ? userDoc.coverPhotoURL
+                    : space}
+                alt="cover picture" />
+
+            <input
+                onChange={handleFile}
+                type='file' id='coverfile'
+                className='hidden'
+            />
+            <label htmlFor='coverfile' className='camera-icon cover-cam-position '>
+                <AiFillCamera size='28' />
+            </label>
+        </div>
+    )
+}
+
+export const ProfilePic = ({ userDoc }) => {
+    const dispatch = useDispatch()
 
     const handleFile = (e) => {
         const file = e.target.files[0]
         console.log(file)
-        dispatch(uploadProfilePic(file))
+        dispatch(uploadProfilePic({
+            file,
+            filename: ''
+        }))
     }
-
-    // ! instant change requierd
-    useEffect(()=>{
-
-    },[userDoc])
 
     return (
         <div className='profile-pic-container '>
             <img className='profile-pic '
-                src={userDoc.photoURL? userDoc.photoURL: solo } alt='profile picture' />
+                src={userDoc.photoURL ? userDoc.photoURL : solo} alt='profile picture' />
 
             <input
                 onChange={handleFile}
@@ -291,8 +328,6 @@ const UserDetails = (props) => (
     <div className='user-details-container'>
         <div className='profile-user-details'>
             <p>Email : <span>{props.currentUser?.user.email}</span></p>
-            <p>flowers : <span>{props.currentUser?.user.email}</span></p>
-            <p>following : <span>{props.currentUser?.user.email}</span></p>
         </div>
     </div>
 )
@@ -303,8 +338,11 @@ const UserPosts = (props) => {
         home: '',
         PostsContainers: ''
     }
+
+
+
     return (
-        <div className='profile-userPosts'>
+        <div className='profile-userPosts  '>
             <Home
                 postLists={props.postLists}
                 isProfilePost={props.userPostBit}

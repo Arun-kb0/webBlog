@@ -19,8 +19,6 @@ function MessageInput() {
   }
 
   const handleKey = (e) => {
-    // e.keyCode === 13 && handleSend()
-    console.log(e.key)
     if (e.keyCode === 13)
       handleSend()
   }

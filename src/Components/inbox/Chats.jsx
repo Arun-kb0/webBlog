@@ -1,14 +1,16 @@
 import React from 'react'
 import Messages from './Messages'
-import Input from './MessageInput'
-
+import MessageInput from './MessageInput'
+import MessagesNavbar from './MessagesNavbar'
 
 function Chats() {
   return (
     <div className='chatsContainer '>
       <div className='chats   '>
-       <Messages/>
-       <Input/>
+        <MessagesNavbar />
+        <Messages />
+        <MessageInput />
+
       </div>
     </div>
   )

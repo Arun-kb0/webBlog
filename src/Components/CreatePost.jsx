@@ -8,28 +8,32 @@ import { addPost } from '../features/redux/firebase/fireStore/firestoreActions'
 function CreatePost() {
   const [title, setTitle] = useState('')
   const [postText, setPostText] = useState('')
-  const [hashtags, setHashtags] = useState()
+  const [hashtags, setHashtags] = useState('')
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const { isAuth, currentUser } = useSelector((store) => {
-    return store.user
+  const { isAuth, currentUser } = useSelector((state) => {
+    return state.user
   })
 
   const createPost = () => {
     console.log("currentUser")
 
-    let hashtagsArray = hashtags.split("#")
-    hashtagsArray = hashtagsArray.filter(item => item != "")
+    let hashtagsArray = null
+    if (hashtags.length !== 0) {
+      hashtagsArray = hashtags.split("#")
+      hashtagsArray = hashtagsArray.filter(item => item != "")
+    }
 
     const data = {
       docName: "posts",
       doc: {
-        id:null,
+        id: null,
         title,
         postText,
         hashtags: hashtagsArray,
+        likeCount: 0,
         author: {
           name: currentUser.user.displayName,
           id: currentUser.user.uid,

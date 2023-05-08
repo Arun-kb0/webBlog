@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUsers, getUserFollowList } from '../../features/redux/firebase/follow/followActions'
 import UserCard from './UserCard'
 
 import { useNavigate } from 'react-router-dom'
 
-function FollowUsers() {
+function FollowUsers(props) {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
-    const { usersList, usersListSize,following } = useSelector((state) => state.followReducer)
-    const { userDoc, isAuth } = useSelector(state => state.user)
-
+    const {usersList, usersListSize, following ,userDoc, isAuth} = props
 
     const styles = {
         userCardContainer: "user-card-container",
@@ -25,8 +22,8 @@ function FollowUsers() {
     useEffect(() => {
         !isAuth && navigate('/login')
         dispatch(getUsers(userDoc))
-       isAuth  && !following && 
-        dispatch(getUserFollowList(userDoc?.followRef))
+        isAuth && !following &&
+            dispatch(getUserFollowList(userDoc?.followRef))
 
         console.warn(usersList)
         console.warn(following)
@@ -43,7 +40,7 @@ function FollowUsers() {
                             uid={user.userId}
                             photoURL={user?.photoURL}
                             followColId={userDoc.followRef}
-                            currentUserId = {userDoc.userId}
+                            currentUserId={userDoc.userId}
                             currentUserName={userDoc.name}
                             styles={styles}
                         />

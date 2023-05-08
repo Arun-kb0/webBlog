@@ -10,8 +10,11 @@ function HomePage() {
   const { postArray, isEmptyArray, arraySize, saveBit,
     isPostsChanged
   } = useSelector(state => state.firestoreDB)
+  const {shareBit } = useSelector(state=> state.shareReducer)
+
   const [postLists, setPostLists] = useState(null)
   const [HomePageBit, setHomePageBit] = useState(false)
+
 
   useEffect(() => {
     let isCancelled = false
@@ -24,6 +27,7 @@ function HomePage() {
           return { ...doc.data(), postId: doc.id }
         })
       )
+      
       setHomePageBit(!HomePageBit)
     }
 
@@ -31,7 +35,7 @@ function HomePage() {
       isCancelled = true
     })
 
-  }, [isPostsChanged, arraySize, saveBit])
+  }, [isPostsChanged, arraySize, saveBit,shareBit])
 
   const styles={
     home:'home',

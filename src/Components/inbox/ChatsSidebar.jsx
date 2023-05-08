@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Search } from '../Navbar'
 import { Divider } from '../SideBar'
 import UserCard from '../followUsers/UserCard'
 import { useSelector, useDispatch } from 'react-redux'
@@ -32,8 +31,6 @@ function ChatsSidebar() {
     search: "w-full my-4"
   }
 
-
-
   // useEffect(() => {
   //   dispatch(getUserFollowList({ followColId: userDoc?.followRef }))
   //   dispatch(getUserChat())
@@ -42,19 +39,20 @@ function ChatsSidebar() {
 
 
   useEffect(() => {
+    console.warn("chatSidebar")
     dispatch(getUserChat())
-  }, [Boolean(foundUsers)])
+  }, [foundUsers,userChatsSize])
 
 
 
   const handleUser = (user) => {
-    dispatch(addChat(user))
-    dispatch(searchUser(''))
-    dispatch(getUserChat())
+     dispatch(addChat(user)).then(()=>{
+       dispatch(searchUser(''))
+       dispatch(getUserChat())
+     })
 
   }
 
-  // !  message recived from peopele not following 
 
   return (
     <div className='ChatsSidebarContainer'>

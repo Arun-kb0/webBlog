@@ -3,7 +3,7 @@ import Profile from '../Components/profile/Profile'
 
 function ProfilePage() {
   return (
-    <div className=''>
+    <div className='overflow-hidden'>
         <Profile/>
     </div>
   )

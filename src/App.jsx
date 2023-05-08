@@ -1,11 +1,8 @@
 import './App.css'
 import React, { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, } from 'react-router-dom'
+import { BrowserRouter, Routes, Route} from 'react-router-dom'
 import Navigation from './Pages/Navigation'
-import HomePageLoad from './Components/home/HomePageLoad'
 import SearchPage from './Pages/SearchPage'
-import FollowUsers from './Components/followUsers/FollowUsers'
-import Following from './Components/profile/Following'
 import Inbox from './Components/inbox/Inbox'
 
 const HomePage = lazy(() => import("./Pages/HomePage"))
@@ -20,6 +17,7 @@ import { onAuthStateChanged } from './imports/firebaseFunctions'
 import { auth } from './firebase-config'
 import { useDispatch } from 'react-redux'
 import { setUser } from './features/redux/firebase/auth/authAction'
+import AddUsersPage from './Pages/AddUsersPage'
 
 
 function App() {
@@ -57,12 +55,12 @@ function App() {
       <Suspense fallback={<div></div>} >
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/createpost" element={<CreatePostPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signUp" element={<SignUpPage />} />
+          <Route path="/createpost" element={<CreatePostPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/hashtags" element={<ViewHashtagsPage />} />
-          <Route path="/addfollowers" element={<FollowUsers />} />
+          <Route path="/addfollowers" element={<AddUsersPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/chat" element={<Inbox />} />
 

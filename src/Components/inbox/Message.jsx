@@ -3,19 +3,16 @@ import solo from '../../assets/solo.png'
 import space from '../../assets/space.png'
 
 
-const Message = ({ userDoc, msg }) => {
+const Message = ({ userDoc, msg,chatUser }) => {
 
   const ref = useRef()
 
-  // console.warn("message component")
-  // console.warn(msg)
-
   // useEffect(() => {
-  //   ref.current.scrollIntoView({ behavior: "smooth" })
+  // ref.current.scrollIntoView({ behavior: "smooth" })
   // }, [msg])
 
   return (
-    <div ref={ref}
+    <div
       className={
         msg.senderId === userDoc.userId
           ? 'message messageOwner'
@@ -23,14 +20,14 @@ const Message = ({ userDoc, msg }) => {
       }
     >
 
-      <div
+      <div ref={ref}
         className='messageInfo '>
         <img
           className='MessageUserImg   '
           src={
             msg.senderId === userDoc.userId
               ? userDoc?.photoURL ? userDoc.photoURL : solo
-              : msg?.photoURL ? msg.photoURL : solo
+              : chatUser?.photoURL ? chatUser.photoURL : solo
           }
           alt='' />
         <span>just now</span>
@@ -55,8 +52,8 @@ const Message = ({ userDoc, msg }) => {
           </p>
         </div>
         {msg.img &&
-          <div 
-          // className="owner flex flex-row-reverse mr-3"
+          <div
+            // className="owner flex flex-row-reverse mr-3"
             className={
               msg.senderId === userDoc.userId
                 ? 'messageContentTextOwner '

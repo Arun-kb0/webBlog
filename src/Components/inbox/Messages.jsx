@@ -22,13 +22,14 @@ const Messages = () => {
   }, [chatId])
 
   return (
-    <div className='messages py-5'>
+    <div className='messages py-5 '>
       {
         messages?.map((msg) => (
           <Message
             key={msg?.id}
             userDoc={userDoc}
             msg={msg}
+            chatUser={chatUser}
           />
         ))
       }

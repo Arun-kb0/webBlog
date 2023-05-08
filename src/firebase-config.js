@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import {getAuth,GoogleAuthProvider,signInWithEmailAndPassword} from 'firebase/auth'
-import {getFirestore} from 'firebase/firestore'
+import {getFirestore, writeBatch} from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional

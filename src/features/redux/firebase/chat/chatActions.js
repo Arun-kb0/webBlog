@@ -6,20 +6,19 @@ import {
     SEARCH_USER_START, SEARCH_USER_SUCCESS, SEARCH_USER_FAILED
 } from "../../constants";
 import { auth, db, storage } from "../../../../firebase-config";
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc, onSnapshot, query } from "../../../../imports/firebaseFunctions";
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc, onSnapshot, query ,
+    arrayUnion, collection, where, getDocs,Timestamp,
+    ref, uploadBytesResumable, getDownloadURL
+} from "../../../../imports/firebaseFunctions";
 import { v4 as uuid } from "uuid";
 
 
-import { Timestamp, arrayUnion, collection, where, getDocs } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { RiTestTubeFill } from "react-icons/ri";
 
 const addChatStart = () => {
     return {
         type: ADD_CHAT_START
     }
 }
-
 
 const addChatSuccess = (data) => {
     return {
@@ -28,12 +27,12 @@ const addChatSuccess = (data) => {
     }
 }
 
-
 const addChatFaied = () => {
     return {
         type: ADD_CHAT_FAILED
     }
 }
+
 
 const sendMessageStart = () => {
     return {
@@ -316,6 +315,11 @@ export const searchUser = (searchString) => {
                         return user.data()
                 })
                 console.log(usersList)
+
+                const currentUserChatRef = doc(db, 'userChats', auth.currentUser.uid)
+                const chatData = await getDoc(currentUserChatRef)
+                console.warn(chatData.data())
+
             }
 
             dispatch(searchUserSuccess(usersList))

@@ -1,8 +1,12 @@
 import { SEARCH_START, SEARCH_SUCCESS, SEARCH_FAILED } from "../../constants";
 
 import { db } from "../../../../firebase-config";
-import { query, collection, where, getDocs } from '../../../../imports/firebaseFunctions'
-import { QueryEndAtConstraint, endAt, orderBy, startAt } from "firebase/firestore";
+import {
+    query, collection, where, getDocs,
+    QueryEndAtConstraint, endAt, startAt
+} from '../../../../imports/firebaseFunctions'
+
+// import { QueryEndAtConstraint, endAt, orderBy, startAt } from "firebase/firestore";
 
 const searchStart = () => {
     return {
