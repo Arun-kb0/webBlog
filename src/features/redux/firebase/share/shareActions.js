@@ -1,22 +1,14 @@
 import {
     SHARE_START, SHARE_FAILED, SHARE_SUCCESS,
-    REMOVE_SHARE_FAILED, REMOVE_SHARE_SUCCESS, REMOVE_SHARE_START,
     GET_SHARE_FAILED, GET_SHARE_START, GET_SHARE_SUCCESS,
     GET_SAVED_START, GET_SAVED_SUCCESS, GET_SAVED_FAILED,
 } from "../../constants";
 
 import { db } from "../../../../firebase-config";
 import {
-    doc, arrayUnion, getDoc, updateDoc, arrayRemove,
-    getDocs, collection, query, where
+    doc, updateDoc, getDocs, collection, query,
+    where, addDoc, serverTimestamp
 } from "../../../../imports/firebaseFunctions";
-import shareReducer from "./shareReducer";
-import { data } from "autoprefixer";
-import { addDoc, serverTimestamp, writeBatch } from "firebase/firestore";
-
-// import { collection, query, where } from "firebase/firestore";
-
-// import { doc, arrayUnion, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
 
 
 // * share
@@ -160,9 +152,9 @@ export const getShared = (uid) => {
             )
             const snap = await getDocs(q)
             console.log(q)
-            const posts = snap.docs?.map(post=>{
+            const posts = snap.docs?.map(post => {
                 return post.data()
-            }) 
+            })
             console.log(posts)
 
             dispatch(getSharedSuccess(posts))
